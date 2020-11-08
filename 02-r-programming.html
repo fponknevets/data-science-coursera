@@ -432,6 +432,17 @@ summary {
 <li>complex</li>
 <li>logical (True / False)</li>
 </ul>
+</div>
+<div id="object-attributes" class="section level4">
+<h4>Object Attributes</h4>
+<ul>
+<li>names / dimnames</li>
+<li>dimensions (matrices / arrays)</li>
+<li>class</li>
+<li>length</li>
+<li>user-defined attributes</li>
+</ul>
+<p>Attributes can be accessed using the <code>attributes()</code> function.</p>
 <hr />
 </div>
 <div id="vector" class="section level4">
@@ -440,6 +451,131 @@ summary {
 <li>can only contain objects of the class (except lists which can contain different classes)</li>
 <li>create an empty vector with the <code>vector()</code> function.</li>
 </ul>
+<div id="creating-vectors" class="section level5">
+<h5>Creating Vectors</h5>
+<pre class="r"><code>x &lt;- c(0.5, 0.6)      # numeric
+x &lt;- c(TRUE, FALSE)   # logical
+x &lt;- c(T, F)          # logical
+x &lt;- c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;) # character
+x &lt;- c(9:29)          # integer
+x &lt;- c(1+0i, 2+4i)    # complex
+
+x &lt;- vector(&quot;numeric&quot;, length = 10)
+x
+[1] 0 0 0 0 0 0 0 0 0 0</code></pre>
+</div>
+<div id="explicit-coercion" class="section level5">
+<h5>Explicit Coercion</h5>
+<pre class="r"><code>x &lt;- 0:6
+x
+[1] 0 1 2 3 4 5 6
+class(x)
+[1] &quot;integer&quot;
+as.numeric(x)
+[1] 0 1 2 3 4 5 6
+as.logical(x)
+[1] FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+as.character(x)
+[1] &quot;0&quot; &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; &quot;5&quot; &quot;6&quot;
+as.integer(x)
+[1] 0 1 2 3 4 5 6</code></pre>
+<hr />
+</div>
+</div>
+<div id="lists" class="section level4">
+<h4>Lists</h4>
+<p>Can contain data of different classes. Lists are indexed using double-brackets <code>[[1]]</code>.</p>
+<pre class="r"><code>x &lt;- list(1, &quot;a&quot;, TRUE, 1 + 4i)
+x
+[[1]]
+[1] 1
+
+[[2]]
+[1] &quot;a&quot;
+
+[[3]]
+[1] TRUE
+
+[[4]]
+[1] 1+4i</code></pre>
+<hr />
+</div>
+<div id="matrices" class="section level4">
+<h4>Matrices</h4>
+<p>Vectors with a dimensions attribute. Dimensions attribute is an integer vector with length 2 (nrow, ncol).</p>
+<pre class="r"><code>&gt; m &lt;- matrix(nrow = 2, ncol = 3)
+&gt; m
+     [,1] [,2] [,3]
+[1,]   NA   NA   NA
+[2,]   NA   NA   NA
+&gt; dim(m)
+[1] 2 3
+&gt; attributes(m)
+$dim
+[1] 2 3</code></pre>
+<p>Matrices are created <strong>column-wise</strong>.</p>
+<pre class="r"><code>&gt; m &lt;- matrix(1:6, nrow = 2, ncol = 3)
+&gt; m
+     [,1] [,2] [,3]
+[1,]    1    3    5
+[2,]    2    4    6</code></pre>
+<p>Matrices can be created from Vectors.</p>
+<pre class="r"><code>&gt; m &lt;- 1:6
+&gt; dim(m) &lt;- c(2,3)
+&gt; m
+     [,1] [,2] [,3]
+[1,]    1    3    5
+[2,]    2    4    6</code></pre>
+<p>Creating Matrices by <strong>cbind</strong>ing and <strong>rbind</strong>ing</p>
+<pre class="r"><code>&gt; x &lt;- 1:3
+&gt; y &lt;- 10:12
+&gt; cbind(x, y)
+     x  y
+[1,] 1 10
+[2,] 2 11
+[3,] 3 12
+&gt; rbind(x, y)
+  [,1] [,2] [,3]
+x    1    2    3
+y   10   11   12</code></pre>
+<hr />
+</div>
+<div id="factors" class="section level4">
+<h4>Factors</h4>
+<p>Used to represent categorical data - ordered or unordered.</p>
+<pre class="r"><code>&gt; x &lt;- factor(c(&quot;yes&quot;, &quot;yes&quot;, &quot;no&quot;, &quot;yes&quot;, &quot;no&quot;))
+&gt; x
+[1] yes yes no  yes no 
+Levels: no yes</code></pre>
+<p>You can get a frequency count of factors by calling table on the factor.</p>
+<pre class="r"><code>&gt; table(x)
+x
+ no yes 
+  2   3 </code></pre>
+<p>Underlying it is an integer vector which you can see if you use <code>unclass()</code> on the factor.</p>
+<pre class="r"><code>&gt; unclass(x)
+[1] 2 2 1 2 1
+attr(,&quot;levels&quot;)
+[1] &quot;no&quot;  &quot;yes&quot;</code></pre>
+<p>You can set the order of the levels by using the <code>levels</code> argument to the <code>factor()</code> function.</p>
+<pre class="r"><code>&gt; x &lt;- factor(c(&quot;yes&quot;, &quot;yes&quot;, &quot;no&quot;, &quot;yes&quot;), levels = c(&quot;yes&quot;, &quot;no&quot;))
+&gt; x
+[1] yes yes no  yes
+Levels: yes no</code></pre>
+<hr />
+</div>
+<div id="missing-values" class="section level4">
+<h4>Missing Values</h4>
+<ul>
+<li><code>NA</code> a missing value; can be any class; can be checked with <code>is.na(x)</code>.</li>
+<li><code>NaN</code> a mising numerical value or is not a number; can be checked with <code>is.nan(x)</code>.</li>
+</ul>
+<p><code>NaN</code> values are also <code>NA</code> values, but the converse is not necessarily true.</p>
+<pre class="r"><code>&gt; x &lt;- c(1, 2, NaN, NA, 10, 3)
+&gt; is.na(x)
+[1] FALSE FALSE  TRUE  TRUE FALSE FALSE
+&gt; is.nan(x)
+[1] FALSE FALSE  TRUE FALSE FALSE FALSE</code></pre>
 </div>
 </div>
 </div>
