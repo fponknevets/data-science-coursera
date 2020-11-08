@@ -421,10 +421,81 @@ summary {
 <h2><strong>R Programming</strong></h2>
 <hr />
 <div id="reading-and-writing-data" class="section level3">
-<h3>Reading and Writing Data</h3>
+<h3>Reading and Writing data</h3>
 <hr />
+<p><br><br></p>
+<div id="functions-for-reading-writing-data" class="section level4">
+<h4>Functions for reading / writing Data</h4>
+<p><br></p>
+<table>
+<colgroup>
+<col width="33%"></col>
+<col width="33%"></col>
+<col width="33%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Reading function</th>
+<th>Writing function</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>read.table</code></td>
+<td><code>write.table</code></td>
+<td>reading / writing tabular data</td>
+</tr>
+<tr class="even">
+<td><code>read.csv</code></td>
+<td><code>write.table</code></td>
+<td>reading / writing csv data</td>
+</tr>
+<tr class="odd">
+<td><code>readLines</code></td>
+<td><code>writeLines</code></td>
+<td>reading / writing lines of text</td>
+</tr>
+<tr class="even">
+<td><code>source</code></td>
+<td><code>dump</code></td>
+<td>reading / writing R code files</td>
+</tr>
+<tr class="odd">
+<td><code>dget</code></td>
+<td><code>dput</code></td>
+<td>reading / writing R code files of objects de-parsed in to text files</td>
+</tr>
+<tr class="even">
+<td><code>unserialize</code></td>
+<td><code>serialize</code></td>
+<td>reading / writing single R objects in binary format</td>
+</tr>
+<tr class="odd">
+<td><code>load</code></td>
+<td><code>save</code></td>
+<td>reading / writing workspaces</td>
+</tr>
+</tbody>
+</table>
+<p><br><br></p>
+</div>
 <div id="reading-tabular-data" class="section level4">
-<h4>Reading Tabular Data</h4>
+<h4>Reading tabular data</h4>
+<p><br></p>
+<pre class="r"><code>read.table( file = &quot;file.path&quot;,             ## all arguments except file are optional for small files
+            header = TRUE,
+            sep = &quot;,&quot;,
+            colClasses = classOfEachColumn, ## a character vector (e.g. &quot;numeric&quot;, &quot;integer&quot;, &quot;character&quot;)
+            nrows = 10,
+            comment.char = &quot;#&quot;, 
+            skip = 5,                       ## number of lines to skip at the beginning of the file
+            stringsAsFactors = FALSE        ## should character vectors be treated as factors, default TRUE
+          )                                 ## RETURNS A DATAFRAME</code></pre>
+<p><br><br></p>
+</div>
+<div id="non-tubular-text-data-formats" class="section level4">
+<h4>Non-tubular text data formats</h4>
 </div>
 </div>
 </div>
