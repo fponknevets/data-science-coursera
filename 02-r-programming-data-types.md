@@ -198,3 +198,77 @@ Levels: yes no
 > is.nan(x)
 [1] FALSE FALSE  TRUE FALSE FALSE FALSE
 ```
+
+---
+
+#### **Data Fames**
+
+Used to store tabular data; can be different data classes in different columns. Rerpresented as a list where every member of the list has the same length.
+
+Each element of the list can be thought of as a column and the length of the elements can be thought of as the number of rows.
+
+Each row can have a row name ```attribute(row.names)```.
+
+Data frames can be created by:
+
++ ```read.table()``` or ```read.csv()```
++ ```data.matrix() ## converts a matrix to a data frame```
++ and can be created directly by using ```data.frame()```.
+
+```R
+> x <- data.frame(foo = 1:4, bar = c(T, T, F, T))
+> x
+  foo   bar
+1   1  TRUE
+2   2  TRUE
+3   3 FALSE
+4   4  TRUE
+> nrow(x)
+[1] 4
+> ncol(x)
+[1] 2
+```
+
+---
+
+#### Names
+
+Objects can have names - useful for readable code and self-describing objects.
+
+```R
+> x <- 1:3
+> names(x)
+NULL
+> names(x) <- c("foo", "bar", "norf")
+> x
+ foo  bar norf 
+   1    2    3 
+> names(x)
+[1] "foo"  "bar"  "norf"
+```
+
+Creating a list with names.
+
+```R
+> x <- list(a = 1, b = 2, c = 3)
+> x
+$a
+[1] 1
+
+$b
+[1] 2
+
+$c
+[1] 3
+```
+
+Matrices can have vectors of row and column names.
+
+```R
+> m <- matrix(1:4, nrow = 2, ncol = 2)
+> dimnames(m) <- list(c("a","b"), c("c","d"))
+> m
+  c d
+a 1 3
+b 2 4
+```
