@@ -1,0 +1,55 @@
+# Data Science Specialism
+[Coursera / John Hopkins University](https://www.coursera.org/learn/r-programming)
+
+---
+
+## **R Programming**
+
+---
+
+### Control Structures
+
+---
+
+<br><br>
+
+#### If ... Else
+
+```R
+if (cond1) { operation }
+
+if (cond2) { operation }
+
+if (cond) { operation } else { operation }
+
+if (cond1) { operation } else if (cond2) { operation } else { operation}
+
+if (cond1){ y <- 1 } else { y <- 2 }
+
+y <- if (cond1) { 1 } else { 2 }
+```
+
+#### For loop
+
+```{r}
+for (i in 1:10) { print(i) }
+
+x <- c("a", "b", "c", "d")
+
+for ( i in seq_along(x) ) { print( c(i, x[i] ) ) }
+
+for ( letter in x ) { print( letter )}
+
+for ( i in 1:4 ) { print( x[i] ) }
+```
+
+**Nest loops**
+```{r}
+m <- matrix(1:6, 2, 3)
+for ( i in seq_len( nrow( m ) ) ) {
+  for ( j in seq_len( ncol( m ) ) ) {
+    print( m[i,j] )
+  }
+}
+```
+
