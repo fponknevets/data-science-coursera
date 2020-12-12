@@ -29,6 +29,8 @@ if (cond1){ y <- 1 } else { y <- 2 }
 y <- if (cond1) { 1 } else { 2 }
 ```
 
+<br><br>
+
 #### For loop
 
 ```{r}
@@ -53,3 +55,24 @@ for ( i in seq_len( nrow( m ) ) ) {
 }
 ```
 
+<br><br>
+
+#### While loops
+```{r}
+count <- 0
+while ( count < 4 ) { print( count ); count <- count + 1 }
+```
+
+<br><br>
+
+#### Repeat, Next, Break
+
+**Repeat**
+```R
+repeat { operation; if ( condition ) { break } }
+```
+
+**Next** to skip an iteration and **Break** to terminate the loop.
+```{r}
+for ( i in 1:15 ) { if ( i < 6 ) { next } else if ( i > 10 ) { break }; print( i ) }
+```

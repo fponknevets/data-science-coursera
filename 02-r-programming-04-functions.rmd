@@ -1,0 +1,39 @@
+---
+title: "Data Science Specialism - R Programming - Functions"
+---
+[Coursera / John Hopkins University](https://www.coursera.org/learn/r-programming)
+
+---
+
+
+#### Basic function syntax
+```{r}
+x <- 1:20
+
+above <- function( x , n = 10 ) {
+        use <- x > 10
+        x[use]                    ## functions without explicit return statement
+}                                 ## return the value of the final statement
+
+
+above(x)
+```
+
+#### Function syntax
+```{r}
+columnmeans <- function( m, removeNA = TRUE ) {
+        nc <- ncol(m)
+        means <- numeric(nc)
+        
+        for ( i in 1:nc ) { means[ i ] <- mean(m[ , i ], na.rm = removeNA ) }
+        means
+}
+
+columnmeans( airquality )
+```
+
+**Lazy evaluation**
+```{r}
+f <- function( a, b ) { a^2 }    ## only evaluates an argument if it is needed
+f(4)
+```
