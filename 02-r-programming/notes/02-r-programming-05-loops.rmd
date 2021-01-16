@@ -1,0 +1,369 @@
+---
+title: "Data Science Specialism - R Programming - Loops"
+author: "Steven Knopf"
+date: "23/12/2020"
+output: html_document
+---
+[Coursera / John Hopkins University](https://www.coursera.org/learn/r-programming)
+
+---
+
+## Loops
+
++ ```lapply``` - loops over a list and evaluates a function on each element
++ ```sapply``` - simplify the result of ```lapply```
++ ```tapply``` - apply a function over subsets of a vector
++ ```mapply``` - multivariate version of ```lapply```
++ ```split``` - used in conjunction with ```lapply```
+
+### lapply
+
+```R
+> x <- list(a = 1:5, b = rnorm(10))
+> x
+$a
+[1] 1 2 3 4 5
+
+$b
+ [1]  0.1914453 -0.4488061  0.1862152 -0.2003549 -0.3078116  1.5331059 -0.7914014 -0.9110498 -0.0952676
+[10]  0.3689981
+
+> lapply(X,mean)
+$a
+[1] 3
+
+$b
+[1] -0.0474927
+
+# passing optional arguments in lapply
+> x <- 1:4
+> lapply(x, runif, min=0, max=10)     # min and max are runif optional arguments
+[[1]]
+[1] 7.108169
+
+[[2]]
+[1] 7.10346 4.74639
+
+[[3]]
+[1] 9.688282 5.138259 9.005831
+
+[[4]]
+[1] 5.9789127 9.6521355 2.5745983 0.8854886
+```
+#### anonymous functions in lapply
+```R
+# you can use anonymous functions in lapply
+> x <- list( a = matrix(1:4, 2, 2), b = matrix(1:6, 3, 2))
+> x
+$a
+     [,1] [,2]
+[1,]    1    3
+[2,]    2    4
+
+$b
+     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6
+
+> lapply( x, function(elt) elt[,1])     # anonymous function to return first col
+$a
+[1] 1 2
+
+$b
+[1] 1 2 3
+
+
+```
+### sapply
++ if the result is a list where every element is length 1, then a vector is returned
++ if the result is a list where every element is same length (>1), a matrix is returned
++ if it can't figure things out, a list is returned
+
+```R
+x <- list(a = 1:4, b = rnorm(10), c = rnorm(20,1), d = rnorm(100, 5))
+> lapply(x,mean)
+$a
+[1] 2.5
+
+$b
+[1] 0.04695532
+
+$c
+[1] 0.7904647
+
+$d
+[1] 4.945883
+
+> sapply(x,mean)
+         a          b          c          d 
+2.50000000 0.04695532 0.79046465 4.94588350 
+```
+
+### apply
+
+```R
+> str(apply)
+function (X, MARGIN, FUN, ...)
+```
++ used to apply a function to the margins of a array
++ most often used to apply a function to the rows or columns
+
+
+```R
+# in this matrix dimension 1 is 20 rows and dimension 2 is 10 columns
+x <- matrix(rnorm(200), 20, 10)
+
+# passing the MARGIN '2' to ```apply``` then applies the mean function to the 
+# columns, in other words the rows are collapsed
+> apply(x, 2, mean)
+ [1] -0.414920248  0.109430608  0.094579583 -0.301725578  0.011051627
+ [6]  0.049983894  0.009805834 -0.014415611  0.332050324  0.077867721
+```
+
+so ```apply(x, 2, mean)``` is equivalent to
+<br />give me the mean for each column in x
+
+Calculating sums and rows there are shortcut functions that are optimised:
+
++ ```rowSums(x)``` is equivalent to ```apply(x, 1, sum)```
++ ```rowMeans(x)``` is equivalent to ```apply(x, 1, mean)```
++ ```colSums(x)``` is equivalent to ```apply(x, 2, sum)```
++ ```colMeans(x)``` is equivalent to ```apply(x, 2, mean)```
+
+#### Passing arguments to functions being applied
+```R
+> x <- matrix(rnorm(200),20,10)
+
+# passing the probs argument to the quantile function
+> apply(x, 1, quantile, probs = c(0.25, 0.75))
+          [,1]       [,2]       [,3]       [,4]       [,5]       [,6]       [,7]        [,8]        [,9]
+25% -0.9686038 -0.5613768 -0.8384428 -1.2898949 -0.9890842 -0.5809978 -0.8237116 -0.62387762 -0.68944995
+75%  0.2023715  1.0789307  0.1325692 -0.0767982  1.3422919  0.5865756  0.3815251  0.08641744  0.09694716
+         [,10]      [,11]      [,12]      [,13]       [,14]      [,15]      [,16]      [,17]      [,18]
+25% -0.5281022 -0.8184700 -0.3546380 -0.2197593 -0.55889314 -1.0146341 -0.2654860 -0.6949905 -0.4205925
+75%  0.2109390  0.5549174  0.3347432  1.0386384 -0.05015169  0.5391982  0.8761715  0.9399615  0.0426014
+           [,19]      [,20]
+25% -0.009323959 -0.5887117
+75%  0.399888547  0.7000215
+```
+
+#### apply on arrays with more thant two dimensions
+
+You can apply functions to arrays that a more than two-dimensional, by passing
+to apply a vector of the dimensions to return
+
+```R
+ # an array of ten 2x2 arrays
+ x <- array(rnorm(2*2*10), c(2, 2, 10))
+ 
+ > apply(x, c(1,2), mean)
+           [,1]       [,2]
+[1,] -0.1386943  0.2684665
+[2,] -0.8332407 -0.4191659
+
+# can also be achieved by rowMeans passing dims = 2
+> rowMeans(x, dims = 2)
+           [,1]       [,2]
+[1,] -0.1386943  0.2684665
+[2,] -0.8332407 -0.4191659
+```
+
+### mapply
+
+Passing multiple lists to a function that takes more than one argument.
+
+```R
+> str(mapply)
+function (FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = TRUE) 
+
+# so nstead of having to do this
+> list(rep(1,4), rep(2,3), rep (3,2), rep(4,1))
+
+# you can instead
+> mapply(rep, 1:4, 4:1)
+[[1]]
+[1] 1 1 1 1
+
+[[2]]
+[1] 2 2 2
+
+[[3]]
+[1] 3 3
+
+[[4]]
+[1] 4
+
+```
+
+#### instant vectorisation
+
+```R
+> noise <- function(n,mean,sd){
+rnorm(n,mean,sd)
+}
+
+> noise(5, 1, 2)
+[1]  3.1778534  5.7378471 -0.5300976  2.1510261 -2.8774595
+
+# instant vectorisation
+> mapply(noise, 1:5, 1:5, 2)
+[[1]]
+[1] -0.6342916
+
+[[2]]
+[1] 2.439486 4.129352
+
+[[3]]
+[1]  2.383408  3.099815 -1.988592
+
+[[4]]
+[1] 1.821112 3.196377 6.457606 5.474797
+
+[[5]]
+[1] 3.724366 4.893213 2.867980 4.717985 9.927331
+```
+
+
+### tapply
+
+Used to apply a function over subsets of  vector
+
+```R
+> str(tapply)
+function (X, INDEX, FUN = NULL, ..., default = NA, simplify = TRUE)  
+
+> x <- c(rnorm(10), runif(10), rnorm(10))
+> f <- gl(3, 10, labels = c("rnorm", "runif", "rnorm2"))
+> tapply(x, f, mean)
+       rnorm        runif       rnorm2 
+-0.003294107  0.385741576 -0.406021751 
+```
+
+### Split
+
+
+Not a loop function but can be included in loop functions.
+
+It takes a vector and factor variable which identified levels in a group.
+
+It uses the factors to split the group into the factors.
+
+```R
+> str(split)
+function (x, f, drop = FALSE, ...)  
+
+> x <- c(rnorm(10), runif(10), rnorm(10,1))
+> x
+ [1] -1.10875502  0.87640764  0.76425634 -0.49652416  0.31837234 -0.27899119  0.86974528
+ [8] -0.96490554  0.03030606 -0.45092506  0.90406855  0.64551003  0.12086852  0.34292359
+[15]  0.43589143  0.78313882  0.49417494  0.55846528  0.99176614  0.56840068  1.58870163
+[22]  0.47344666  1.27192088  1.52466823  1.83481493  2.28398544  1.85541432 -0.08514160
+[29] -0.29171560  2.36127689
+> f <- gl(3,10)
+> f
+ [1] 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3
+Levels: 1 2 3
+> split(x,f)
+$`1`
+ [1] -1.10875502  0.87640764  0.76425634 -0.49652416  0.31837234 -0.27899119  0.86974528
+ [8] -0.96490554  0.03030606 -0.45092506
+
+$`2`
+ [1] 0.9040685 0.6455100 0.1208685 0.3429236 0.4358914 0.7831388 0.4941749 0.5584653 0.9917661
+[10] 0.5684007
+
+$`3`
+ [1]  1.5887016  0.4734467  1.2719209  1.5246682  1.8348149  2.2839854  1.8554143 -0.0851416
+ [9] -0.2917156  2.3612769
+ 
+ # it is common to then use, say, the lapply function to apply a function on the splits
+ > lapply(split(x,f),mean)
+$`1`
+[1] -0.04410133
+
+$`2`
+[1] 0.5845208
+
+$`3`
+[1] 1.281737
+
+# but you would not do this because you can achieve the same using the tapply function
+> tapply(x,f, mean)
+          1           2           3 
+-0.04410133  0.58452080  1.28173718 
+
+# but you can use split on things like Dataframes
+> library(datasets)
+> head(airquality)
+  Ozone Solar.R Wind Temp Month Day
+1    41     190  7.4   67     5   1
+2    36     118  8.0   72     5   2
+3    12     149 12.6   74     5   3
+4    18     313 11.5   62     5   4
+5    NA      NA 14.3   56     5   5
+6    28      NA 14.9   66     5   6
+
+# so you can split the data frame above on months and then use the factors to
+# apply a function on the subsets of data
+
+> s <- split(airquality, airquality$Month)
+> sapply(s, function(x) colMeans(x[, c('Ozone', 'Solar.R', 'Wind')]))
+               5         6          7        8        9
+Ozone         NA        NA         NA       NA       NA
+Solar.R       NA 190.16667 216.483871       NA 167.4333
+Wind    11.62258  10.26667   8.941935 8.793548  10.1800
+
+# pass colMeans the na.rm argument to get rid of the NAs
+> sapply(s, function(x) colMeans(x[, c('Ozone', 'Solar.R', 'Wind', 'Temp')], na.rm = TRUE))
+                5         6          7          8         9
+Ozone    23.61538  29.44444  59.115385  59.961538  31.44828
+Solar.R 181.29630 190.16667 216.483871 171.857143 167.43333
+Wind     11.62258  10.26667   8.941935   8.793548  10.18000
+Temp     65.54839  79.10000  83.903226  83.967742  76.90000
+```
+
+#### splitting on more than one level
+
+```R
+> f1 <- gl(2,5)
+> f2 <- gl(5,2)
+> f1
+ [1] 1 1 1 1 1 2 2 2 2 2
+Levels: 1 2
+
+> f2
+ [1] 1 1 2 2 3 3 4 4 5 5
+Levels: 1 2 3 4 5
+
+> interaction(f1,f2)
+ [1] 1.1 1.1 1.2 1.2 1.3 2.3 2.4 2.4 2.5 2.5
+Levels: 1.1 2.1 1.2 2.2 1.3 2.3 1.4 2.4 1.5 2.5
+
+> x <- rnorm(10)
+
+# using split with these two different factors
+# it automatically calls interaction, so no nedd to call it explicitly
+> str(split(x,list(f1,f2)))
+List of 10
+ $ 1.1: num [1:2] 0.0286 -0.7027
+ $ 2.1: num(0) 
+ $ 1.2: num [1:2] 0.0685 1.2626
+ $ 2.2: num(0) 
+ $ 1.3: num 0.366
+ $ 2.3: num 0.716
+ $ 1.4: num(0) 
+ $ 2.4: num [1:2] 0.915 0.135
+ $ 1.5: num(0) 
+ $ 2.5: num [1:2] 0.77 -0.508
+
+# to remove the unobservied levels use the drop argument
+> str(split(x,list(f1,f2),drop = TRUE))
+List of 6
+ $ 1.1: num [1:2] 0.0286 -0.7027
+ $ 1.2: num [1:2] 0.0685 1.2626
+ $ 1.3: num 0.366
+ $ 2.3: num 0.716
+ $ 2.4: num [1:2] 0.915 0.135
+ $ 2.5: num [1:2] 0.77 -0.508
+```

@@ -1,6 +1,6 @@
 # pollutantmean.R
 
-pollutantmean <- function(directory, pollutant, id = 1:322) {
+pollutantmean <- function(directory, pollutant, id = 1:332) {
         start_dir <- getwd()
         setwd(directory)
 
