@@ -1,0 +1,41 @@
+# Data Science Specialism
+[Coursera / John Hopkins University](https://www.coursera.org/learn/r-programming)
+
+---
+
+## **R Programming**
+
+---
+
+## Profiling
+
+### Using system.time()
+
+Returns an object of the class ```proc_time```.
+
++ **user time** - time charged to the CPU for the expression
++ **elapsed time** - "wall clock time"
+
+```R
+> system.time(readLines("https://www.mit.edu"))
+   user  system elapsed 
+  0.026   0.006   0.366
+> # elapsed time > user time due to waiting for the return of data over the network from readLines
+>
+> hilbert <- function(n) {
++ i <- 1:n
++ 1 / outer (i-1, i, "+")
++ }
+> x <- hilbert(1000)
+> system.time(svd(x))
+   user  system elapsed 
+  3.029   0.000   3.098 
+> # in this elapsed time is supposed to be less than user time because svd shold make use of a multi threaded library on the Mac, but I am running on a Linux PC.
+```
+<br />
+
+### Using Rprof() summaryRprof()
+
+```Rprof()``` samples the function call stack every 0.02 seconds.
+
+``` summaryRprof()``` summarises the data produced by the profiler. Summaries can either by

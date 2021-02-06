@@ -128,12 +128,30 @@ num [1:10, 1:10] -0.625 -0.411 0.486 -1.247 0.396 ...
 
 Can do this for several types of distribution, including:
 
-Prefixes for functions for these four types of ditribtion are:
+Prefixes for functions for these four types of distribution are:
 
 + **d** for density
 + **r** for random number generation
 + **p** for cumulative distribution
 + **q** for quantile function
+
+Whenever generating random numbers you can also set the seed. This alows you to generate the exact same set of random numbers repeatedly.
+
+```R
+> set.seed(10)
+> rnorm(5)
+[1]  0.01874617 -0.18425254 -1.37133055 -0.59916772  0.29454513
+> rnorm(5)
+[1]  0.3897943 -1.2080762 -0.3636760 -1.6266727 -0.2564784
+> set.seed(10) # resetting the seed
+> rnorm(5)
+[1]  0.01874617 -0.18425254 -1.37133055 -0.59916772  0.29454513
+```
+
+
+<br />
+
++ ```rpois``` - generate random Poisson variates with a given rate
 
 
 ### Normal Distribution
@@ -144,12 +162,14 @@ In probability theory, a normal (or Gaussian or Gauss or Laplace–Gauss) distri
 
 Normal distributions are important in statistics and are often used in the natural and social sciences to represent real-valued random variables whose distributions are not known. Their importance is partly due to the central limit theorem. It states that, under some conditions, the average of many samples (observations) of a random variable with finite mean and variance is itself a random variable—whose distribution converges to a normal distribution as the number of samples increases. Therefore, physical quantities that are expected to be the sum of many independent processes, such as measurement errors, often have distributions that are nearly normal.
 
-#### rnorm
+#### Functions for simulating Normal random numbers
 
-```rnorm``` generates random **Normal** variates given a mean and standard deviation
-
++ ```rnorm(n, m=0, std=1)``` - generate ```n``` number of random Normal variables (obs) with ```m``` mean and ```std``` standard deviation
++ ```dnorm(x, m=0, std=1)``` - evaluate the Normal probability density at a point (or vector of points) given ```x``` vector of quantiles
++ ```pnorm(q, m=0, std=1)``` - evaluate the cumulative distribution function for a Normal distribution given ```q``` vector of quantiles
++ ```qnorm(p, m=0, std=1)``` - evaluate the quantile function given ```p``` vector of probabilities
 ```R
-# rnorm(x, m, sd)  where x = number of variate to generate, m = mean, sd = std dev
+# rnorm(n, m, sd)  where n = number of variates to generate, m = mean, sd = std dev
 x <- rnorm(100, 50, 10)
 ```
 
