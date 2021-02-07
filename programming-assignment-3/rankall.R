@@ -22,8 +22,6 @@ rankall <- function(outcome, num = "best") {
 
         # setup the dataframe that we will be returning
         results <- data.frame(matrix(ncol = 2, nrow = 0))
-        col_names <- c("hospital", "state")
-        colnames(results) <- col_names
 
         # split the outcomes into state outcomes
         split_outcomes <- split(outcomes, outcomes$State)
@@ -56,4 +54,9 @@ rankall <- function(outcome, num = "best") {
         }
         ## Return a data frame with the hospital names and the
         ## (abbreviated) state name
+
+        col_names <- c("hospital", "state")
+        colnames(results) <- col_names
+
+        results
 }
