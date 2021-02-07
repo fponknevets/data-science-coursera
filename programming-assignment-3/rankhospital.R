@@ -35,9 +35,7 @@ rankhospital <- function(state, outcome, num = "best"){
                            outcomes$Hospital.Name,
                            na.last = NA),]
 
-        # interpret the num input into a numeric
-
-
+        # interpret the num into a numeric or exit of number not valid
         interpreted_num <-
                 if (is.numeric(num)) {
                         if (num >= 1 & num <= nrow(outcomes)){
@@ -52,11 +50,6 @@ rankhospital <- function(state, outcome, num = "best"){
                                return(NA))
                 }
 
-        # exit if the interpreted num is less than 1 or more than the number of
-        # hospitals in that state with numeric outcomes
-        if ( interpreted_num > nrow(outcomes) || interpreted_num < 1) {
-                return(NA)
-        }
 
         # return the hospital name of the ranked hospital
         outcomes[interpreted_num,2]
