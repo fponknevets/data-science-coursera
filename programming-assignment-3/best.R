@@ -1,5 +1,6 @@
 best <- function (state, outcome) {
 
+        # turn off warnings that would otherwise pollute the programme's output
         oldw <- getOption("warn")
         options(warn = -1)
 
@@ -28,5 +29,6 @@ best <- function (state, outcome) {
         result <- sort(outcomes$Hospital.Name)
         print(result[1])
 
+        # turn the warnings state back to whatever it was at the start
         options(warn = oldw)
 }
