@@ -1,0 +1,74 @@
+---
+title: "Data Science Specialism"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Reading MySQL Data
+
+https://www.coursera.org/learn/data-cleaning/home/welcome
+
+
+Further Info
+RMySQL Vignette: https://cran.r-project.org/web/packages/RMySQL/RMySQL.pdf
+MySQL Commands: http://www.pantz.org/software/mysql/mysqlcommands.html
+R bloggers: https://www.r-bloggers.com/2011/08/mysql-and-r/
+
+### Week 2
+
+#### Prerequisites
+
+```
+# $ sudo apt-get update -y
+# $ sudo apt-get install -y libmariadbclient-dev
+# $ sudo apt-get install -y libmariadb-client-lgpl-dev # this did not work
+# $ R
+# > install.packages("RMySQL")
+# > install.packages("DBI")
+# > library("RMySQL")
+```
+
+#### Connecting and listing databases
+```{r}
+ucscGenomeDb <- dbConnect(MySQL(), user="genome", host="genome-mysql.cse.ucsc.edu")
+ucscGenomeDbDatabases <- dbGetQuery(ucscGenomeDb, "show databases")
+dbDisconnect(ucscGenomeDb)
+```
+
+#### Connecting and listing tables, getting data
+```{r}
+hg19db <- dbConnect(MySQL(), user="genome", db="hg19", host="genome-mysql.cse.ucsc.edu")
+hg19dbtables <- dbListTables(hg19db)
+length(hg19dbtables)
+
+# get dimensions of a specified table
+dbListFields(hg19db, "affyU133Plus2")
+dbGetQuery(hg19db, "select count(*) from affyU133Plus2")
+
+affyData <- dbReadTable(hg19db, "affyU133Plus2")
+head(affyData)
+
+dbDisconnect(ucscGenomeDb)
+
+```
+
+
+#### Getting a subset of data
+```{r}
+hg19db <- dbConnect(MySQL(), user="genome", db="hg19", host="genome-mysql.cse.ucsc.edu")
+
+
+# note dbSendQuery() function as opposed to the getQuery() function
+query <- dbSendQuery(hg19db, "select * from affyU133Plus2 where misMatches between 1 and 3")
+affMis <- fetch(query)
+quantile((affMis$misMatches))
+
+# or just getting a little bit of the data
+affMisSmall <- fetch(query, n = 10)
+
+dbClearResult(query)
+dbDisconnect(ucscGenomeDb)
+
+```
+

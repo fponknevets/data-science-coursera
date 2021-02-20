@@ -1,0 +1,187 @@
+---
+title: "Data Science Specialism"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Getting and Cleaning Data
+
+https://www.coursera.org/learn/data-cleaning/home/welcome
+
+### Week 1
+
+#### Downloading Files
+
+Use the ```setup``` chunk to set the working directory for all other chunks in this notebook. If we did this in a normal chunk the working directory would be reset as soon as that chunk had finished executing.
+
+```{r setup}
+# {r setup}
+
+mod3Dir <- "~/repositories/learning/data-science-coursera/03-get-clean-data"
+dataDir <- "data"
+
+setwd(mod3Dir)
+if(!file.exists(dataDir)) { dir.create(dataDir) }
+
+# set the root directory for this notebook
+knitr::opts_knit$set(root.dir = paste(mod3Dir, dataDir, sep = "/"))
+```
+
+
+<br />
+
+#### Question 1 of the the Quiz.
+
+```{r}
+# Question 1 - count the number of properties whose value in $1,000,000 or more
+
+Q1dataUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv"
+Q1dataDestFile <- "american_community_survey_2006.csv"
+
+if(!file.exists(Q1dataDestFile)) {
+        download.file(Q1dataUrl, Q1dataDestFile, method = "curl")
+        Q1dataDownloaded <- date()
+}
+
+Q1codebookUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FPUMSDataDict06.pdf"
+Q1codebookDestFile <- "american_community_survey_code_book.pdf"
+
+if(!file.exists(Q1codebookDestFile)) {
+        download.file(Q1codebookUrl, Q1codebookDestFile, method = "curl")
+        Q1codebookDownloaded <- date()
+}
+
+# Load the data
+communityData <- read.csv(Q1dataDestFile)
+
+# answer the question
+length(which(communityData$VAL == 24))
+```
+
+<br />
+
+#### Readng the downloaded data
+
+Some choices
+
++ ```read.table(file, header, sep, row.names, nrows)``` - robust, flexible but slow 
++ ```read.csv(file, header = TRUE, sep = ",")``` - other options below
+
+```quote = ""``` - the character to treat as a quote character in the CSV file - set to ```""``` if you are having trouble with data that has ``` ` ``` or ```"``` characters in the data
+
+```na-strings = "NA"``` - the string used in the file to represent NA
+
+```nrows = 100``` - the number of rows to read
+
+```skip = 1``` - the number of rows to skip before starting to read the file.
+
+<br />
+
+#### Question 3 of the the Quiz.
+
+
+```{r}
+# Question 3 - 
+
+
+Q3dataUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FDATA.gov_NGAP.xlsx"
+Q3dataDestFile <- "naturalGasAcquisitionDestFile.xlsx"
+
+if(!file.exists(Q3dataDestFile)) {
+        download.file(Q3dataUrl, Q3dataDestFile, method = "curl")
+        Q3dataDownloaded <- date()
+}
+
+# Load the data - read rows 18-23 and columns 7-15 and assign to "dat"
+
+# to get this to work I had to install rJava
+# (https://www.r-bloggers.com/2018/02/installing-rjava-on-ubuntu/)
+# as this is a dependency of the xlsx package
+
+# also to get the rJava package to work I had to do the following
+# export LD_LIBRARY_PATH=/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server
+# sudo R CMD javareconf
+
+
+library(xlsx)
+colIndex <- 7:15
+rowIndex <- 18:23
+dat <- read.xlsx(Q3dataDestFile, sheetIndex = 1, colIndex = colIndex, rowIndex = rowIndex)
+# answer the question - what is the output of the following function
+sum(dat$Zip*dat$Ext,na.rm=T)
+```
+
+<br />
+
+#### Question 4 of the the Quiz.
+
+Get extra info on extracting data from XML here:
+https://www.stat.berkeley.edu/~statcur/Workshop2/Presentations/XML.pdf
+
+```{r}
+# Question 4 - 
+
+# in order to get this to work I hadf to install the Ubuntu package libxml2-dev
+# > sudo apt-get install libxml2-dev
+# > R
+# > install.packages("XML")
+
+
+library(XML)
+
+Q4dataUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Frestaurants.xml"
+Q4dataDestFile <- "restaurants.xml"
+
+if(!file.exists(Q4dataDestFile)) {
+        download.file(Q4dataUrl, Q4dataDestFile, method = "curl")
+        Q4dataDownloaded <- date()
+}
+
+# this did not work because xmlTreeParse does not support https
+# Q4Doc <- xmlTreeParse(Q4dataUrl)
+
+# so instead I had to do this:
+Q4Doc <- xmlTreeParse(sub("s", "", Q4dataUrl), useInternal = TRUE)
+rootNode <- xmlRoot(Q4Doc)
+
+# answer the question - what is the output of the following function
+# this by the way is not great at all
+zips <- xmlSApply(rootNode[[1]], function(x) xmlSApply(x[["zipcode"]], xmlValue))
+tableOfZips <- table(zips)
+zip21231 <- tableOfZips[names(tableOfZips) == 21231]
+zip21231
+```
+
+
+<br />
+
+#### Question 5 of the the Quiz.
+
+
+```{r}
+# Question 5 - 
+
+
+
+Q5dataUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06pid.csv"
+Q5dataDestFile <- "idaho.csv"
+
+if(!file.exists(Q5dataDestFile)) {
+        download.file(Q5dataUrl, Q5dataDestFile, method = "curl")
+        Q5dataDownloaded <- date()
+}
+
+
+
+# need to install and load the package data.table in order to use fread()
+# > install.packages("data.table")
+library("data.table")
+
+#fread() - fast read detects all setting
+DT <- fread(Q5dataDestFile)
+
+
+
+```
+

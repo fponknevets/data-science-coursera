@@ -1,0 +1,117 @@
+---
+title: "Data Science Specialism"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Reading HDF5 Data (a hierarchical data format with groups and datasets)
+https://www.coursera.org/learn/data-cleaning/home/welcome
+
+<br />
+
+HDF5's main features are the ability to store and access very large and/or complex datasets and a wide variety of metadata on mass storage (disk) through a completely portable file format. The rhdf5 package is thus suited for the exchange of large and/or complex datasets between R and other software package, and for letting R applications work on datasets that are larger than the available RAM.
+
+
+**Further Info**
+
+HDF5: https://hdf5group.org
+
+Docs: https://bioconductor.org/packages/release/bioc/html/rhdf5.html
+
+Tutorial: https://www.neonscience.org/resources/learning-hub/tutorials/hdf5-intro-r
+
+
+<br />
+
+```{r setup}
+# {r setup}
+
+mod3Dir <- "~/repositories/learning/data-science-coursera/03-get-clean-data"
+dataDir <- "data"
+
+setwd(mod3Dir)
+if(!file.exists(dataDir)) { dir.create(dataDir) }
+
+# set the root directory for this notebook
+knitr::opts_knit$set(root.dir = paste(mod3Dir, dataDir, sep = "/"))
+
+# delete the data file if it exists
+setwd("~/repositories/learning/data-science-coursera/03-get-clean-data/data")
+if(file.exists("steven.h5")){
+        file.remove("steven.h5")
+}
+
+
+# install the prerequisites
+# https://bioconductor.org/packages/release/bioc/html/rhdf5.html
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("rhdf5")
+
+library("rhdf5")
+```
+
+
+<br />
+
+#### Creating an HDF5 file
+```{r}
+# setwd("~/repositories/learning/data-science-coursera/03-get-clean-data/data")
+created <- h5createFile("steven.h5")
+created
+```
+
+<br />
+
+#### Creating Groups and Datasets in the HDF5 file
+```{r}
+# setwd("~/repositories/learning/data-science-coursera/03-get-clean-data/data")
+# "created" just swallows the [1] TRUE output
+created <- h5createGroup("steven.h5", "money")
+created <- h5createGroup("steven.h5", "health")
+created <- h5createGroup("steven.h5", "learning")
+created <- h5createGroup("steven.h5", "learning/data-science")
+
+h5ls("steven.h5")
+```
+
+```{r}
+# writing data to a group
+# create matrices and write them to groups
+# setwd("~/repositories/learning/data-science-coursera/03-get-clean-data/data")
+
+accounts = matrix(1:10, nr=5,nc=2)
+h5write(accounts, file="steven.h5", "/money/accounts")
+
+
+# can also write data to the top level group
+letts <- data.frame(1L:5L, seq(0,1,length.out = 5),
+                    c("ab", "cde", "fghi", "a", "s"),
+                    stringsAsFactors = FALSE
+)
+h5write(letts, "steven.h5", "letters")
+
+h5ls("steven.h5")
+```
+
+```{r}
+# reading the data from an HDF5 file
+# setwd("~/repositories/learning/data-science-coursera/03-get-clean-data/data")
+
+readLetrs <- h5read("steven.h5", "letters")
+
+readLetrs
+```
+
+```{r}
+# writing to specific parts of a dataset
+# setwd("~/repositories/learning/data-science-coursera/03-get-clean-data/data")
+
+
+# the index argument can also be passed to h5read if you want to read specific parts
+# of a dataset in and HDF5 document
+h5write(c(12,13,14), "steven.h5", "money/accounts", index=list(1:3,1))
+h5read("steven.h5", "money/accounts")
+```

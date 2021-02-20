@@ -1,0 +1,141 @@
+---
+title: "Data Science Specialism"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Reading Web Data (webscraping)
+https://www.coursera.org/learn/data-cleaning/home/welcome
+
+**Further information**
+
+r-bloggers.com/?s=Web+Scraping
+cran.r-project.org/web/packages/httr/httr.pdf
+
+
+
+```{r setup}
+# {r setup}
+
+mod3Dir <- "~/repositories/learning/data-science-coursera/03-get-clean-data"
+dataDir <- "data"
+
+setwd(mod3Dir)
+if(!file.exists(dataDir)) { dir.create(dataDir) }
+
+# set the root directory for this notebook
+knitr::opts_knit$set(root.dir = paste(mod3Dir, dataDir, sep = "/"))
+
+# install the prerequisites
+
+library(XML)
+
+# needed to get data from https locations as XML::htmlTreeParse cannae handle that
+library(RCurl)
+
+# used for the GET coomand httr::GET
+library(httr)
+
+# a practice scapering site
+url <- "https://en.wikipedia.org/wiki/Well-formed"
+url_needing_authentication <- "http://httpbin.org/basic-auth/user/passwd"
+
+```
+
+<br />
+
+### Webscraping
+
+<br />
+
+#### Using readLines()
+```{r}
+
+conn <- url(url)
+html <- readLines(conn, n = 5)
+close(conn)
+html
+
+```
+
+<br />
+
+#### Using htmlTreeParse
+```R
+# this does not work because htmlTreeParse does not work with https
+html <- htmlTreeParse(url, useInternalNodes = T)
+
+# some people have suggested instead using http in the protocol but this doe not work either
+html <- htmlTreeParse(sub("s", "", url), useInternalNodes = T)
+```
+
+<br />
+
+#### Using xmlParse
+```{r}
+
+data <- getURL(url)
+html <- xmlParse(data)
+
+xpathSApply(html, "//title", xmlValue)
+
+```
+
+
+<br />
+
+#### Using httr::GET
+```{r}
+
+myResp <- GET(url)
+class(myResp)
+
+myText <- content(myResp, as="text")
+class(myText)
+
+myHTML <- htmlParse(myText, asText = TRUE)
+class (myHTML)
+
+xpathSApply(html, "//title", xmlValue)
+
+```
+
+<br />
+
+#### Using httr::GET with Basic Authentication
+```{r}
+
+# should get a 401 response if credentials are not provided in the request
+myResp <- GET(url_needing_authentication)
+status_code(myResp)
+
+```
+
+```{r}
+
+# should get a 200 response if credentials are provided in the request
+myResp <- GET(url_needing_authentication, authenticate("user", "passwd"))
+status_code(myResp)
+```
+
+```{r}
+names(myResp) # the different components of the response (note: 'handle')
+```
+
+```{r}
+# using handles with httr::GET means that you can authenticate once and then not
+# need to authenticate again in that session as long as you use the handle
+
+# even though I have previously authenticated this will return a 401 - unauthorised
+myResp <- GET(url_needing_authentication)
+status_code(myResp)
+
+# so use a handle
+testSiteHandle = handle(url_needing_authentication)
+
+# authenticate once whilst using that handle
+myResp <- GET(handle=testSiteHandle, path="/")
+status_code(myResp)
+```
+
