@@ -26,3 +26,32 @@ if(!file.exists(dataDir)) { dir.create(dataDir) }
 knitr::opts_knit$set(root.dir = paste(mod3Dir, dataDir, sep = "/"))
 
 # install the prerequisites
+library(httr)
+
+# Twitter API App Details
+twitterAppName <- "fponknevetsTwitterApp"
+twitterAPIKey <- "3fwJ5UbWHsesysYpKVM83zI8C"
+twitterAPIKeySecret <- "gvF1QXUApKmPV41XYM5vAcqca6OgRtYCVoOzp79o5OktalJ1tz"
+twitterAPIBearerToken <- "AAAAAAAAAAAAAAAAAAAAAAEnFQEAAAAAHgkMdi0iu58HtA27ULVD6CGXkfE%3DDdXaqy51I2q0v3xHYAcPFhFXzSXhU5K6jh9oRjxtWXNkBdDAVr"
+
+twitterAccessToken <- "439103918-REWgVgvxP1AFZOILuvUUcW8yG4SbpQZFC1mFMkiR"
+twitterAccessTokenSecret <- "7kmVNWhozixsGuEhxFw1b0Fi2HsfvCt1JvDFZUyz2UjzY"
+
+```
+
+```{r}
+
+# authenticating with the App
+myApp = oauth_app(twitterAppName, key=twitterAPIKey, secret=twitterAPIKeySecret)
+mySig = sign_oauth1.0(myApp, token=twitterAccessToken, token_secret=twitterAccessTokenSecret)
+
+myTimeLineData = GET("https://api.twitter.com/1.1/statuses/home_timeline.json", mySig)
+
+json1 = content(myTimeLineData)
+json2 <- jsonlite::fromJSON((jsonlite::toJSON(json1)))
+
+json2[1, 1:4]
+
+
+```
+

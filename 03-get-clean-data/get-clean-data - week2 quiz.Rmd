@@ -1,0 +1,104 @@
+---
+title: "Data Science Specialism"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Reading Web Data (Quiz)
+https://www.coursera.org/learn/data-cleaning/home/welcome
+
+**Further information**
+
+
+
+
+```{r setup}
+# {r setup}
+
+mod3Dir <- "~/repositories/learning/data-science-coursera/03-get-clean-data"
+dataDir <- "data"
+
+setwd(mod3Dir)
+if(!file.exists(dataDir)) { dir.create(dataDir) }
+
+# set the root directory for this notebook
+knitr::opts_knit$set(root.dir = paste(mod3Dir, dataDir, sep = "/"))
+
+# install the prerequisites
+library(httr)
+library(RCurl)
+
+# GitHub API App Details
+githubAppName <- "fponknevetsGithubApp"
+
+githubClientId <- "0c3a3b95740904003684"
+githubClientSecret <- "80ff5097a318a81c65eb7c75f8ddd735a72555eb"
+
+
+```
+
+```{r}
+
+# Question 1
+
+jtLeekURL = "https://api.github.com/users/jtleek/repos"
+conn <- url(jtLeekURL)
+        response_data <- readLines(conn)
+close(conn)
+
+json <- jsonlite::fromJSON(response_data)
+json[json$name=="datasharing","created_at"]
+
+```
+
+```{r}
+
+# Question 2
+
+acsURL  = "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06pid.csv"
+acsDestFile <- "american_community_survey_2006.csv"
+
+if(!file.exists(acsDestFile)) {
+        download.file(acsURL, acsDestFile, method = "curl")
+        acsDataDownloaded <- date()
+}
+
+acs <- read.csv(acsDestFile)
+names(acs)
+```
+
+```{r}
+
+# Question 4
+
+url <- "http://biostat.jhsph.edu/~jleek/contact.html"
+conn <- url(url)
+        html <- readLines(conn)
+close(conn)
+
+nchar(html[10])
+nchar(html[20])
+nchar(html[30])
+nchar(html[100])
+
+```
+
+```{r}
+
+# Question 5
+
+url <- "https://d396qusza40orc.cloudfront.net/getdata%2Fwksst8110.for"
+destfile <- "question5.for"
+
+if(!file.exists(destfile)) {
+        download.file(url, destfile, method = "curl")
+        q5DataDownloaded <- date()
+}
+
+col_widths <- c(15,4,9,4,9,4,9,4,9)
+
+df <- read.fwf(destfile, skip=4, header=F, widths=col_widths)
+
+sum(df[,4])
+```

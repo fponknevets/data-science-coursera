@@ -37,7 +37,7 @@ library(RCurl)
 # used for the GET coomand httr::GET
 library(httr)
 
-# a practice scapering site
+# a practice scrapeing site
 url <- "https://en.wikipedia.org/wiki/Well-formed"
 url_needing_authentication <- "http://httpbin.org/basic-auth/user/passwd"
 
