@@ -1,0 +1,31 @@
+---
+title: "Data Science Specialism - R Programming"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Subesting and Sorting Data
+https://www.coursera.org/learn/data-cleaning/home/welcome
+
+**Further information**
+
+r-bloggers.com/?s=Web+Scraping
+cran.r-project.org/web/packages/httr/httr.pdf
+
+
+
+```{r setup}
+# {r setup}
+
+mod3Dir <- "~/repositories/learning/data-science-coursera/03-get-clean-data"
+dataDir <- "data"
+
+setwd(mod3Dir)
+if(!file.exists(dataDir)) { dir.create(dataDir) }
+
+# set the root directory for this notebook
+knitr::opts_knit$set(root.dir = paste(mod3Dir, dataDir, sep = "/"))
+
+# install the prerequisites
+```
