@@ -1623,8 +1623,8 @@ pre code {
 </div>
 
 
-<div id="subesting-and-sorting-data" class="section level1">
-<h1>Subesting and Sorting Data</h1>
+<div id="subsetting-and-sorting-data" class="section level1">
+<h1>Subsetting and Sorting Data</h1>
 <p><a href="https://www.coursera.org/learn/data-cleaning/home/welcome" class="uri">https://www.coursera.org/learn/data-cleaning/home/welcome</a></p>
 <p><strong>Further information</strong></p>
 <p><a href="http://www.biostat.jhsph.edu/~ajaffe/lec_winterR/Lecture%202.pdf" class="uri">http://www.biostat.jhsph.edu/~ajaffe/lec_winterR/Lecture%202.pdf</a></p>
@@ -1632,160 +1632,180 @@ pre code {
 
 mod3Dir &lt;- &quot;~/repositories/learning/data-science-coursera/03-get-clean-data&quot;
 dataDir &lt;- &quot;data&quot;
+destFile &lt;- &quot;baltimoreCctv.csv&quot;
+destPath &lt;- paste(dataDir,destFile,sep=&quot;/&quot;)
+fileUrl &lt;- &quot;https://opendata.arcgis.com/datasets/b034388df7c447c98609e39453a3abaa_0.csv?outSR=%7B%22latestWkid%22%3A3857%2C%22wkid%22%3A102100%7D&quot;
 
 setwd(mod3Dir)
-if(!file.exists(dataDir)) { dir.create(dataDir) }
+if(!file.exists(dataDir)) {
+        dir.create(dataDir)
+}
+
+if(!file.exists(destPath))
+   {
+        download.file(fileUrl, destfile=destPath, method=&quot;curl&quot;)
+}
+
+cctvData &lt;- read.csv(destPath)
+
+# add levels to the proj field as this dataset does not have levels when imported
+cctvData$proj &lt;- factor(cctvData$proj)
+
 
 # set the root directory for this notebook
 knitr::opts_knit$set(root.dir = paste(mod3Dir, dataDir, sep = &quot;/&quot;))
 
-# setup simple data frame for this session
-set.seed(13435)
-x &lt;- data.frame(&quot;var1&quot;=sample(1:5), &quot;var2&quot;=sample(6:10), &quot;var3&quot;=sample(11:15))
-x &lt;- x[sample(1:5),];x$var2[c(1,3)]=NA
-
-# install the prerequisites (if not already installed)
-if(&quot;plyr&quot; %in% rownames(installed.packages()) == FALSE) {install.packages(&quot;plyr&quot;)}</code></pre>
+# install the prerequisites (if not already installed)</code></pre>
 <p><br /></p>
-<div id="quick-review-of-simple-subsetting" class="section level3">
-<h3>Quick Review of Simple Subsetting</h3>
-<div id="create-a-simple-data-frame" class="section level4">
-<h4>Create a simple data frame</h4>
-<pre class="r"><code>x</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["var1"],"name":[1],"type":["int"],"align":["right"]},{"label":["var2"],"name":[2],"type":["int"],"align":["right"]},{"label":["var3"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"2","2":"NA","3":"11","_rn_":"5"},{"1":"4","2":"10","3":"12","_rn_":"4"},{"1":"3","2":"NA","3":"14","_rn_":"1"},{"1":"1","2":"7","3":"15","_rn_":"2"},{"1":"5","2":"6","3":"13","_rn_":"3"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+<div id="simple-summarising" class="section level3">
+<h3>Simple Summarising</h3>
 <p><br /></p>
-</div>
-<div id="do-some-simple-sub-setting-on-it" class="section level4">
-<h4>Do some simple sub-setting on it</h4>
-<pre class="r"><code># get the first column
-x[,1]</code></pre>
-<pre><code>## [1] 2 4 3 1 5</code></pre>
-<pre class="r"><code># get the first row
-x[1,]</code></pre>
+<div id="head-tail-summary-str" class="section level4">
+<h4>head, tail, summary, str</h4>
+<pre class="r"><code>head(cctvData, n = 3)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["var1"],"name":[1],"type":["int"],"align":["right"]},{"label":["var2"],"name":[2],"type":["int"],"align":["right"]},{"label":["var3"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"2","2":"NA","3":"11","_rn_":"5"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["X"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Y"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["fid"],"name":[3],"type":["int"],"align":["right"]},{"label":["objectid"],"name":[4],"type":["int"],"align":["right"]},{"label":["cam_num"],"name":[5],"type":["int"],"align":["right"]},{"label":["notes"],"name":[6],"type":["lgl"],"align":["right"]},{"label":["location"],"name":[7],"type":["chr"],"align":["left"]},{"label":["proj"],"name":[8],"type":["fct"],"align":["left"]},{"label":["xcoord"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["ycoord"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["created_us"],"name":[11],"type":["lgl"],"align":["right"]},{"label":["created_da"],"name":[12],"type":["lgl"],"align":["right"]},{"label":["last_edite"],"name":[13],"type":["lgl"],"align":["right"]},{"label":["last_edi_1"],"name":[14],"type":["lgl"],"align":["right"]}],"data":[{"1":"-8528128","2":"4768301","3":"1","4":"1","5":"535","6":"NA","7":"Greenmount  - 30th","8":"BPD Cameras","9":"-76.60948","10":"39.32478","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"1"},{"1":"-8528245","2":"4764599","3":"2","4":"2","5":"2508","6":"NA","7":"JFX North","8":"BPD Cameras","9":"-76.61052","10":"39.29905","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"2"},{"1":"-8528260","2":"4764888","3":"3","4":"3","5":"2507","6":"NA","7":"JFX south","8":"BPD Cameras","9":"-76.61067","10":"39.30106","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"3"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
-<pre class="r"><code># get a column by variable name
-x[,&quot;var1&quot;]</code></pre>
-<pre><code>## [1] 2 4 3 1 5</code></pre>
-<pre class="r"><code># get first four rows of a particular variable
-x[1:4,&quot;var2&quot;]</code></pre>
-<pre><code>## [1] NA 10 NA  7</code></pre>
-<p><br /></p>
-</div>
-<div id="sub-setting-using-logical-statements" class="section level4">
-<h4>Sub-setting using logical statements</h4>
-<pre class="r"><code># subsetting using comparison operators and also combinatorials such as &quot;and&quot; or &quot;or&quot;
-x[(x$var1 &lt;= 3 &amp; x$var3 &gt; 11),]</code></pre>
+<pre class="r"><code>tail(cctvData, n = 3)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["var1"],"name":[1],"type":["int"],"align":["right"]},{"label":["var2"],"name":[2],"type":["int"],"align":["right"]},{"label":["var3"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"3","2":"NA","3":"14","_rn_":"1"},{"1":"1","2":"7","3":"15","_rn_":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["X"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Y"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["fid"],"name":[3],"type":["int"],"align":["right"]},{"label":["objectid"],"name":[4],"type":["int"],"align":["right"]},{"label":["cam_num"],"name":[5],"type":["int"],"align":["right"]},{"label":["notes"],"name":[6],"type":["lgl"],"align":["right"]},{"label":["location"],"name":[7],"type":["chr"],"align":["left"]},{"label":["proj"],"name":[8],"type":["fct"],"align":["left"]},{"label":["xcoord"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["ycoord"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["created_us"],"name":[11],"type":["lgl"],"align":["right"]},{"label":["created_da"],"name":[12],"type":["lgl"],"align":["right"]},{"label":["last_edite"],"name":[13],"type":["lgl"],"align":["right"]},{"label":["last_edi_1"],"name":[14],"type":["lgl"],"align":["right"]}],"data":[{"1":"-8532772","2":"4762137","3":"671","4":"671","5":"1027","6":"NA","7":"Smallwood/Ashton","8":"BPD Cameras/1027 Smallw","9":"-76.65119","10":"39.28194","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"671"},{"1":"-8528586","2":"4762790","3":"672","4":"672","5":"1924","6":"NA","7":"Pratt/Light","8":"BPD Cameras/1924 -  Pra","9":"-76.61359","10":"39.28647","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"672"},{"1":"-8529026","2":"4762775","3":"673","4":"673","5":"1923","6":"NA","7":"Pratt/Sharp","8":"BPD Cameras/1923 - Prat","9":"-76.61754","10":"39.28637","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"673"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
-<pre class="r"><code>x[(x$var1 &lt;= 3 | x$var3 &gt; 15),]</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["var1"],"name":[1],"type":["int"],"align":["right"]},{"label":["var2"],"name":[2],"type":["int"],"align":["right"]},{"label":["var3"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"2","2":"NA","3":"11","_rn_":"5"},{"1":"3","2":"NA","3":"14","_rn_":"1"},{"1":"1","2":"7","3":"15","_rn_":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<p><br /></p>
-</div>
-<div id="dealing-with-nas-in-subsetting" class="section level4">
-<h4>Dealing with NAs in subsetting</h4>
-<pre class="r"><code># subsetting NOT dealing with the NAs
-x[x$var2 &gt; 8, ]</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["var1"],"name":[1],"type":["int"],"align":["right"]},{"label":["var2"],"name":[2],"type":["int"],"align":["right"]},{"label":["var3"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"NA","2":"NA","3":"NA","_rn_":"__NA__"},{"1":"4","2":"10","3":"12","_rn_":"4"},{"1":"NA","2":"NA","3":"NA","_rn_":"NA.1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<pre class="r"><code># subsetting dealing with the NAs
-x[which(x$var2 &gt; 8), ]</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["var1"],"name":[1],"type":["int"],"align":["right"]},{"label":["var2"],"name":[2],"type":["int"],"align":["right"]},{"label":["var3"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"4","2":"10","3":"12","_rn_":"4"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+<pre class="r"><code>summary(cctvData)</code></pre>
+<pre><code>##        X                  Y                fid         objectid  
+##  Min.   :-8538519   Min.   :4756402   Min.   :  1   Min.   :  1  
+##  1st Qu.:-8531458   1st Qu.:4763185   1st Qu.:169   1st Qu.:169  
+##  Median :-8528884   Median :4764548   Median :337   Median :337  
+##  Mean   :-8529267   Mean   :4764395   Mean   :337   Mean   :337  
+##  3rd Qu.:-8526650   3rd Qu.:4765709   3rd Qu.:505   3rd Qu.:505  
+##  Max.   :-8522062   Max.   :4774083   Max.   :673   Max.   :673  
+##                                                                  
+##     cam_num        notes           location        
+##  Min.   :   1.0   Mode:logical   Length:673        
+##  1st Qu.: 209.0   NA&#39;s:673       Class :character  
+##  Median : 723.0                  Mode  :character  
+##  Mean   : 930.7                                    
+##  3rd Qu.:1901.0                                    
+##  Max.   :2612.0                                    
+##                                                    
+##                       proj         xcoord           ycoord      created_us    
+##  BPD Cameras            :587   Min.   :-76.70   Min.   :39.24   Mode:logical  
+##  Hopkins Fixed Cameras  : 63   1st Qu.:-76.64   1st Qu.:39.29   NA&#39;s:673      
+##  EBDI                   : 18   Median :-76.62   Median :39.30                 
+##  BPD Cameras/1027 Smallw:  1   Mean   :-76.62   Mean   :39.30                 
+##  BPD Cameras/1923 - Prat:  1   3rd Qu.:-76.60   3rd Qu.:39.31                 
+##  BPD Cameras/1924 -  Pra:  1   Max.   :-76.55   Max.   :39.36                 
+##  (Other)                :  2                                                  
+##  created_da     last_edite     last_edi_1    
+##  Mode:logical   Mode:logical   Mode:logical  
+##  NA&#39;s:673       NA&#39;s:673       NA&#39;s:673      
+##                                              
+##                                              
+##                                              
+##                                              
+## </code></pre>
+<pre class="r"><code>str(cctvData)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    673 obs. of  14 variables:
+##  $ X         : num  -8528128 -8528245 -8528260 -8528267 -8528167 ...
+##  $ Y         : num  4768301 4764599 4764888 4764917 4765048 ...
+##  $ fid       : int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ objectid  : int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ cam_num   : int  535 2508 2507 2506 2505 2504 2503 2502 930 932 ...
+##  $ notes     : logi  NA NA NA NA NA NA ...
+##  $ location  : chr  &quot;Greenmount  - 30th&quot; &quot;JFX North&quot; &quot;JFX south&quot; &quot;Fallsway and Eager&quot; ...
+##  $ proj      : Factor w/ 8 levels &quot;BPD Cameras&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ xcoord    : num  -76.6 -76.6 -76.6 -76.6 -76.6 ...
+##  $ ycoord    : num  39.3 39.3 39.3 39.3 39.3 ...
+##  $ created_us: logi  NA NA NA NA NA NA ...
+##  $ created_da: logi  NA NA NA NA NA NA ...
+##  $ last_edite: logi  NA NA NA NA NA NA ...
+##  $ last_edi_1: logi  NA NA NA NA NA NA ...</code></pre>
 <p><br /></p>
 </div>
+<div id="quantile" class="section level4">
+<h4>quantile</h4>
+<pre class="r"><code># quantile not really that useful for this data set but here it is being used on cam_num
+quantile(cctvData$cam_num, na.rm = TRUE)</code></pre>
+<pre><code>##   0%  25%  50%  75% 100% 
+##    1  209  723 1901 2612</code></pre>
+<pre class="r"><code>quantile(cctvData$X)</code></pre>
+<pre><code>##       0%      25%      50%      75%     100% 
+## -8538519 -8531458 -8528884 -8526650 -8522062</code></pre>
+<pre class="r"><code>quantile(cctvData$Y)</code></pre>
+<pre><code>##      0%     25%     50%     75%    100% 
+## 4756402 4763185 4764548 4765709 4774083</code></pre>
+<pre class="r"><code>quantile(cctvData$Y, probs = c(0.1,0.25,0.3))</code></pre>
+<pre><code>##     10%     25%     30% 
+## 4762304 4763185 4763529</code></pre>
+<p><br /></p>
 </div>
-<div id="quick-review-of-sorting" class="section level3">
-<h3>Quick Review of Sorting</h3>
-<pre class="r"><code># sorting
-sort(x$var1)</code></pre>
-<pre><code>## [1] 1 2 3 4 5</code></pre>
-<pre class="r"><code>sort(x$var1, decreasing = TRUE)</code></pre>
-<pre><code>## [1] 5 4 3 2 1</code></pre>
-<pre class="r"><code># dealing with NAs in sorting
-sort(x$var2)</code></pre>
-<pre><code>## [1]  6  7 10</code></pre>
-<pre class="r"><code>sort(x$var2, na.last = TRUE)</code></pre>
-<pre><code>## [1]  6  7 10 NA NA</code></pre>
-<pre class="r"><code>sort(x$var2, na.last = FALSE)</code></pre>
-<pre><code>## [1] NA NA  6  7 10</code></pre>
-<pre class="r"><code># Ordering a dataframe
-x[order(x$var1),]</code></pre>
+<div id="table" class="section level4">
+<h4>table</h4>
+<pre class="r"><code># summarise across one variable, useNA sets what you do with NAs, default is not include
+table(cctvData$proj, useNA = &quot;ifany&quot;)</code></pre>
+<pre><code>## 
+##             BPD Cameras BPD Cameras/1027 Smallw BPD Cameras/1923 - Prat 
+##                     587                       1                       1 
+## BPD Cameras/1924 -  Pra BPD Cameras/518-Barclay BPD Cameras/603 Monumne 
+##                       1                       1                       1 
+##                    EBDI   Hopkins Fixed Cameras 
+##                      18                      63</code></pre>
+<pre class="r"><code># two dimensional table across two variables
+# table(cctvData$project, cctvData$cam_num)</code></pre>
+<p><br /></p>
+</div>
+<div id="checking-for-missing-values" class="section level4">
+<h4>Checking for missing values</h4>
+<pre class="r"><code># count of NA values in notes field
+sum(is.na(cctvData$notes))</code></pre>
+<pre><code>## [1] 673</code></pre>
+<pre class="r"><code># any NAs in the notes field?
+any(is.na(cctvData$notes))</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code># all values agree with the condition
+all(cctvData$fid == cctvData$objectid)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code># count of missing values per column
+colSums(is.na(cctvData))</code></pre>
+<pre><code>##          X          Y        fid   objectid    cam_num      notes   location 
+##          0          0          0          0          0        673          0 
+##       proj     xcoord     ycoord created_us created_da last_edite last_edi_1 
+##          0          0          0        673        673        673        673</code></pre>
+<pre class="r"><code># no columns have NAs - they do actually so false
+all(colSums(is.na(cctvData)) == 0)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<p><br /></p>
+</div>
+<div id="summarising-specific-values" class="section level4">
+<h4>summarising specific values</h4>
+<pre class="r"><code># for a single value
+table(cctvData$xcoord &gt;= -76.60)</code></pre>
+<pre><code>## 
+## FALSE  TRUE 
+##   479   194</code></pre>
+<pre class="r"><code># for a vector of values
+table(round(cctvData$xcoord, 2) %in% c(-76.59, -76.60))</code></pre>
+<pre><code>## 
+## FALSE  TRUE 
+##   479   194</code></pre>
+<p><br /></p>
+</div>
+<div id="subsetting-the-data-using-the-specific-values" class="section level4">
+<h4>subsetting the data using the specific values</h4>
+<pre class="r"><code>cctvData[round(cctvData$xcoord,2) %in% c(-76.59),]</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["var1"],"name":[1],"type":["int"],"align":["right"]},{"label":["var2"],"name":[2],"type":["int"],"align":["right"]},{"label":["var3"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"1","2":"7","3":"15","_rn_":"2"},{"1":"2","2":"NA","3":"11","_rn_":"5"},{"1":"3","2":"NA","3":"14","_rn_":"1"},{"1":"4","2":"10","3":"12","_rn_":"4"},{"1":"5","2":"6","3":"13","_rn_":"3"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<pre class="r"><code># ordering by multiple variables
-x[order(x$var1, x$var3),]</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["var1"],"name":[1],"type":["int"],"align":["right"]},{"label":["var2"],"name":[2],"type":["int"],"align":["right"]},{"label":["var3"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"1","2":"7","3":"15","_rn_":"2"},{"1":"2","2":"NA","3":"11","_rn_":"5"},{"1":"3","2":"NA","3":"14","_rn_":"1"},{"1":"4","2":"10","3":"12","_rn_":"4"},{"1":"5","2":"6","3":"13","_rn_":"3"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["X"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Y"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["fid"],"name":[3],"type":["int"],"align":["right"]},{"label":["objectid"],"name":[4],"type":["int"],"align":["right"]},{"label":["cam_num"],"name":[5],"type":["int"],"align":["right"]},{"label":["notes"],"name":[6],"type":["lgl"],"align":["right"]},{"label":["location"],"name":[7],"type":["chr"],"align":["left"]},{"label":["proj"],"name":[8],"type":["fct"],"align":["left"]},{"label":["xcoord"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["ycoord"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["created_us"],"name":[11],"type":["lgl"],"align":["right"]},{"label":["created_da"],"name":[12],"type":["lgl"],"align":["right"]},{"label":["last_edite"],"name":[13],"type":["lgl"],"align":["right"]},{"label":["last_edi_1"],"name":[14],"type":["lgl"],"align":["right"]}],"data":[{"1":"-8526418","2":"4763868","3":"102","4":"102","5":"201","6":"NA","7":"E Fayette St - N Broadway","8":"BPD Cameras","9":"-76.59412","10":"39.29397","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"102"},{"1":"-8526408","2":"4763676","3":"103","4":"103","5":"202","6":"NA","7":"E Fairmount Ave - N Broadway","8":"BPD Cameras","9":"-76.59403","10":"39.29263","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"103"},{"1":"-8526399","2":"4763519","3":"104","4":"104","5":"203","6":"NA","7":"E Baltimore St - S Broadway","8":"BPD Cameras","9":"-76.59394","10":"39.29154","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"104"},{"1":"-8526158","2":"4763530","3":"105","4":"105","5":"204","6":"NA","7":"E Baltimore St - S Ann St","8":"BPD Cameras","9":"-76.59178","10":"39.29162","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"105"},{"1":"-8525871","2":"4763548","3":"106","4":"106","5":"205","6":"NA","7":"E Baltimore St - S Washington St","8":"BPD Cameras","9":"-76.58920","10":"39.29175","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"106"},{"1":"-8526390","2":"4763355","3":"107","4":"107","5":"206","6":"NA","7":"E Lombard St - S Broadway","8":"BPD Cameras","9":"-76.59387","10":"39.29040","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"107"},{"1":"-8526150","2":"4763369","3":"108","4":"108","5":"207","6":"NA","7":"E Lombard St - S Ann St","8":"BPD Cameras","9":"-76.59171","10":"39.29050","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"108"},{"1":"-8526076","2":"4763372","3":"109","4":"109","5":"208","6":"NA","7":"E Lombard St - S Durham St","8":"BPD Cameras","9":"-76.59105","10":"39.29052","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"109"},{"1":"-8525932","2":"4763377","3":"110","4":"110","5":"209","6":"NA","7":"E Lombard St - S Chapel St","8":"BPD Cameras","9":"-76.58975","10":"39.29055","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"110"},{"1":"-8525860","2":"4763380","3":"111","4":"111","5":"210","6":"NA","7":"E Lombard St - S Washington St","8":"BPD Cameras","9":"-76.58911","10":"39.29057","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"111"},{"1":"-8526383","2":"4763190","3":"112","4":"112","5":"211","6":"NA","7":"E Pratt St - S Broadway","8":"BPD Cameras","9":"-76.59380","10":"39.28926","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"112"},{"1":"-8526372","2":"4762955","3":"114","4":"114","5":"213","6":"NA","7":"Gough St - S Broadway","8":"BPD Cameras","9":"-76.59370","10":"39.28762","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"114"},{"1":"-8526231","2":"4762966","3":"115","4":"115","5":"214","6":"NA","7":"Gough St - S Regester St","8":"BPD Cameras","9":"-76.59243","10":"39.28770","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"115"},{"1":"-8526365","2":"4762809","3":"116","4":"116","5":"215","6":"NA","7":"Bank St - S Broadway","8":"BPD Cameras","9":"-76.59364","10":"39.28661","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"116"},{"1":"-8526356","2":"4762661","3":"118","4":"118","5":"218","6":"NA","7":"Eastern Ave - S Broadway","8":"BPD Cameras","9":"-76.59356","10":"39.28558","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"118"},{"1":"-8526116","2":"4762677","3":"119","4":"119","5":"219","6":"NA","7":"Eastern Ave - S Ann St","8":"BPD Cameras","9":"-76.59141","10":"39.28569","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"119"},{"1":"-8526357","2":"4762521","3":"120","4":"120","5":"220","6":"NA","7":"Fleet St - S Broadway","8":"BPD Cameras","9":"-76.59357","10":"39.28460","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"120"},{"1":"-8526323","2":"4762515","3":"121","4":"121","5":"221","6":"NA","7":"Fleet St - S Broadway St (East)","8":"BPD Cameras","9":"-76.59326","10":"39.28456","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"121"},{"1":"-8526110","2":"4762539","3":"122","4":"122","5":"222","6":"NA","7":"Fleet St - S Ann St","8":"BPD Cameras","9":"-76.59135","10":"39.28473","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"122"},{"1":"-8526314","2":"4762367","3":"125","4":"125","5":"225","6":"NA","7":"S Broadway - Aliceanna St(East)","8":"BPD Cameras","9":"-76.59318","10":"39.28353","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"125"},{"1":"-8526308","2":"4762124","3":"126","4":"126","5":"227","6":"NA","7":"Thames St - S Broadway","8":"BPD Cameras","9":"-76.59312","10":"39.28184","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"126"},{"1":"-8525723","2":"4764541","3":"218","4":"218","5":"601","6":"NA","7":"E Monument St - N Chester St","8":"BPD Cameras","9":"-76.58787","10":"39.29865","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"218"},{"1":"-8525643","2":"4764391","3":"219","4":"219","5":"602","6":"NA","7":"McElderry St - N Duncan St","8":"BPD Cameras","9":"-76.58715","10":"39.29761","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"219"},{"1":"-8525514","2":"4764692","3":"220","4":"220","5":"604","6":"NA","7":"E Madison St - N Mederia St","8":"BPD Cameras","9":"-76.58599","10":"39.29970","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"220"},{"1":"-8525713","2":"4764380","3":"388","4":"388","5":"1945","6":"NA","7":"McElderry-Chester","8":"BPD Cameras","9":"-76.58778","10":"39.29752","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"388"},{"1":"-8526497","2":"4762961","3":"470","4":"470","5":"2311","6":"NA","7":"Perkins 299 Herring Ct","8":"BPD Cameras","9":"-76.59483","10":"39.28767","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"470"},{"1":"-8526342","2":"4762365","3":"504","4":"504","5":"226","6":"NA","7":"Aliceanna and Broadway west","8":"BPD Cameras","9":"-76.59343","10":"39.28352","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"504"},{"1":"-8526149","2":"4766499","3":"535","4":"535","5":"1204","6":"NA","7":"North and Wolfe","8":"BPD Cameras","9":"-76.59170","10":"39.31226","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"535"},{"1":"-8526006","2":"4766508","3":"536","4":"536","5":"1205","6":"NA","7":"North and Washington","8":"BPD Cameras","9":"-76.59042","10":"39.31232","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"536"},{"1":"-8525812","2":"4766519","3":"537","4":"537","5":"1206","6":"NA","7":"North and Chester","8":"BPD Cameras","9":"-76.58867","10":"39.31239","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"537"},{"1":"-8525678","2":"4766527","3":"538","4":"538","5":"1207","6":"NA","7":"North and Collington","8":"BPD Cameras","9":"-76.58747","10":"39.31245","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"538"},{"1":"-8526427","2":"4767302","3":"557","4":"557","5":"1306","6":"NA","7":"Harford(harbor city school)","8":"BPD Cameras","9":"-76.59420","10":"39.31784","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"557"},{"1":"-8526325","2":"4767417","3":"558","4":"558","5":"1307","6":"NA","7":"Harford and Montpelier","8":"BPD Cameras","9":"-76.59328","10":"39.31864","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"558"},{"1":"-8526267","2":"4767490","3":"559","4":"559","5":"1307","6":"NA","7":"Harford and Homestead","8":"BPD Cameras","9":"-76.59276","10":"39.31914","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"559"},{"1":"-8526080","2":"4767728","3":"560","4":"560","5":"1309","6":"NA","7":"Harford and Abbotston","8":"BPD Cameras","9":"-76.59108","10":"39.32080","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"560"},{"1":"-8526031","2":"4767786","3":"561","4":"561","5":"1310","6":"NA","7":"Harford and Alameda","8":"BPD Cameras","9":"-76.59064","10":"39.32120","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"561"},{"1":"-8525949","2":"4767882","3":"562","4":"562","5":"1311","6":"NA","7":"Harford and Tivoly","8":"BPD Cameras","9":"-76.58990","10":"39.32187","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"562"},{"1":"-8525875","2":"4767951","3":"563","4":"563","5":"1312","6":"NA","7":"Harford and Fenwick","8":"BPD Cameras","9":"-76.58924","10":"39.32235","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"563"},{"1":"-8525790","2":"4768035","3":"564","4":"564","5":"1313","6":"NA","7":"Harford and Hugo","8":"BPD Cameras","9":"-76.58848","10":"39.32293","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"564"},{"1":"-8525573","2":"4764238","3":"567","4":"567","5":"627","6":"NA","7":"Collington & Jefferson","8":"BPD Cameras","9":"-76.58652","10":"39.29654","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"567"},{"1":"-8526075","2":"4764827","3":"588","4":"588","5":"12","6":"NA","7":"N Wolfe St  and Ashland Ave","8":"EBDI","9":"-76.59104","10":"39.30064","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"588"},{"1":"-8525929","2":"4764833","3":"589","4":"589","5":"10","6":"NA","7":"Ashland and Washington","8":"EBDI","9":"-76.58972","10":"39.30068","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"589"},{"1":"-8525935","2":"4765021","3":"590","4":"590","5":"11","6":"NA","7":"Washington and Eager","8":"EBDI","9":"-76.58978","10":"39.30199","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"590"},{"1":"-8526220","2":"4764818","3":"591","4":"591","5":"9","6":"NA","7":"Ashland and Rutland","8":"EBDI","9":"-76.59234","10":"39.30057","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"591"},{"1":"-8526168","2":"4765092","3":"592","4":"592","5":"8","6":"NA","7":"Durham St","8":"EBDI","9":"-76.59187","10":"39.30248","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"592"},{"1":"-8526046","2":"4765289","3":"593","4":"593","5":"7","6":"NA","7":"School back Corner","8":"EBDI","9":"-76.59078","10":"39.30384","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"593"},{"1":"-8525949","2":"4765227","3":"594","4":"594","5":"6","6":"NA","7":"Chase and Washington","8":"EBDI","9":"-76.58990","10":"39.30342","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"594"},{"1":"-8526363","2":"4765351","3":"595","4":"595","5":"5","6":"NA","7":"McDonogh and Biddle","8":"EBDI","9":"-76.59362","10":"39.30428","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"595"},{"1":"-8526357","2":"4765205","3":"596","4":"596","5":"4","6":"NA","7":"McDonogh and Chase","8":"EBDI","9":"-76.59357","10":"39.30326","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"596"},{"1":"-8526348","2":"4765009","3":"597","4":"597","5":"3","6":"NA","7":"McDonogh and Eager","8":"EBDI","9":"-76.59348","10":"39.30190","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"597"},{"1":"-8526241","2":"4765211","3":"598","4":"598","5":"2","6":"NA","7":"Rutland and Chase","8":"EBDI","9":"-76.59253","10":"39.30330","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"598"},{"1":"-8526250","2":"4765366","3":"599","4":"599","5":"1","6":"NA","7":"Rutland and Biddle","8":"EBDI","9":"-76.59261","10":"39.30438","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"599"},{"1":"-8526082","2":"4765025","3":"600","4":"600","5":"13","6":"NA","7":"Eager and Wolf","8":"EBDI","9":"-76.59109","10":"39.30201","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"600"},{"1":"-8526454","2":"4765204","3":"601","4":"601","5":"14","6":"NA","7":"Broadway and Chase","8":"EBDI","9":"-76.59444","10":"39.30325","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"601"},{"1":"-8526446","2":"4765007","3":"603","4":"603","5":"16","6":"NA","7":"Broadway and Eager","8":"EBDI","9":"-76.59437","10":"39.30189","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"603"},{"1":"-8526435","2":"4764811","3":"604","4":"604","5":"17","6":"NA","7":"Ashland and Broadway","8":"EBDI","9":"-76.59427","10":"39.30053","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"604"},{"1":"-8525953","2":"4765381","3":"605","4":"605","5":"18","6":"NA","7":"Washington and Biddle","8":"EBDI","9":"-76.58994","10":"39.30449","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"605"},{"1":"-8526383","2":"4764078","3":"608","4":"608","5":"78","6":"NA","7":"78","8":"Hopkins Fixed Cameras","9":"-76.59381","10":"39.29543","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"608"},{"1":"-8526042","2":"4763894","3":"609","4":"609","5":"89","6":"NA","7":"89","8":"Hopkins Fixed Cameras","9":"-76.59074","10":"39.29415","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"609"},{"1":"-8526139","2":"4763889","3":"610","4":"610","5":"115","6":"NA","7":"115","8":"Hopkins Fixed Cameras","9":"-76.59161","10":"39.29411","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"610"},{"1":"-8526232","2":"4763883","3":"611","4":"611","5":"113","6":"NA","7":"113","8":"Hopkins Fixed Cameras","9":"-76.59245","10":"39.29407","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"611"},{"1":"-8526292","2":"4763881","3":"612","4":"612","5":"111","6":"NA","7":"111","8":"Hopkins Fixed Cameras","9":"-76.59299","10":"39.29406","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"612"},{"1":"-8526375","2":"4763877","3":"613","4":"613","5":"107","6":"NA","7":"107","8":"Hopkins Fixed Cameras","9":"-76.59373","10":"39.29403","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"613"},{"1":"-8526388","2":"4763974","3":"614","4":"614","5":"131","6":"NA","7":"131","8":"Hopkins Fixed Cameras","9":"-76.59384","10":"39.29471","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"614"},{"1":"-8526088","2":"4764039","3":"615","4":"615","5":"86","6":"NA","7":"86","8":"Hopkins Fixed Cameras","9":"-76.59116","10":"39.29516","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"615"},{"1":"-8526230","2":"4764037","3":"616","4":"616","5":"83","6":"NA","7":"83","8":"Hopkins Fixed Cameras","9":"-76.59243","10":"39.29514","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"616"},{"1":"-8526350","2":"4764033","3":"617","4":"617","5":"81","6":"NA","7":"81","8":"Hopkins Fixed Cameras","9":"-76.59350","10":"39.29512","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"617"},{"1":"-8526388","2":"4764027","3":"618","4":"618","5":"128","6":"NA","7":"128","8":"Hopkins Fixed Cameras","9":"-76.59385","10":"39.29508","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"618"},{"1":"-8526438","2":"4764070","3":"619","4":"619","5":"141","6":"NA","7":"141","8":"Hopkins Fixed Cameras","9":"-76.59430","10":"39.29537","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"619"},{"1":"-8526482","2":"4764070","3":"620","4":"620","5":"138","6":"NA","7":"138","8":"Hopkins Fixed Cameras","9":"-76.59469","10":"39.29537","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"620"},{"1":"-8526495","2":"4764172","3":"624","4":"624","5":"134","6":"NA","7":"134","8":"Hopkins Fixed Cameras","9":"-76.59481","10":"39.29608","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"624"},{"1":"-8526449","2":"4764177","3":"625","4":"625","5":"136","6":"NA","7":"136","8":"Hopkins Fixed Cameras","9":"-76.59439","10":"39.29612","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"625"},{"1":"-8526510","2":"4764231","3":"626","4":"626","5":"145","6":"NA","7":"145","8":"Hopkins Fixed Cameras","9":"-76.59494","10":"39.29649","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"626"},{"1":"-8526479","2":"4764262","3":"627","4":"627","5":"143","6":"NA","7":"143","8":"Hopkins Fixed Cameras","9":"-76.59466","10":"39.29671","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"627"},{"1":"-8526452","2":"4764358","3":"628","4":"628","5":"105","6":"NA","7":"105","8":"Hopkins Fixed Cameras","9":"-76.59442","10":"39.29738","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"628"},{"1":"-8526500","2":"4764489","3":"634","4":"634","5":"53","6":"NA","7":"53","8":"Hopkins Fixed Cameras","9":"-76.59486","10":"39.29828","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"634"},{"1":"-8526460","2":"4764492","3":"635","4":"635","5":"55","6":"NA","7":"55","8":"Hopkins Fixed Cameras","9":"-76.59449","10":"39.29830","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"635"},{"1":"-8526454","2":"4764479","3":"636","4":"636","5":"58","6":"NA","7":"58","8":"Hopkins Fixed Cameras","9":"-76.59444","10":"39.29821","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"636"},{"1":"-8526400","2":"4764493","3":"637","4":"637","5":"60","6":"NA","7":"60","8":"Hopkins Fixed Cameras","9":"-76.59395","10":"39.29832","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"637"},{"1":"-8526431","2":"4764638","3":"638","4":"638","5":"42","6":"NA","7":"42","8":"Hopkins Fixed Cameras","9":"-76.59423","10":"39.29932","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"638"},{"1":"-8526300","2":"4764649","3":"639","4":"639","5":"40","6":"NA","7":"40","8":"Hopkins Fixed Cameras","9":"-76.59306","10":"39.29939","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"639"},{"1":"-8526260","2":"4764496","3":"640","4":"640","5":"62","6":"NA","7":"62","8":"Hopkins Fixed Cameras","9":"-76.59269","10":"39.29833","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"640"},{"1":"-8526191","2":"4764526","3":"641","4":"641","5":"37","6":"NA","7":"37","8":"Hopkins Fixed Cameras","9":"-76.59208","10":"39.29854","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"641"},{"1":"-8526203","2":"4764661","3":"642","4":"642","5":"34","6":"NA","7":"34","8":"Hopkins Fixed Cameras","9":"-76.59219","10":"39.29948","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"642"},{"1":"-8526082","2":"4764658","3":"643","4":"643","5":"29","6":"NA","7":"29","8":"Hopkins Fixed Cameras","9":"-76.59110","10":"39.29946","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"643"},{"1":"-8526075","2":"4764533","3":"644","4":"644","5":"32","6":"NA","7":"32","8":"Hopkins Fixed Cameras","9":"-76.59104","10":"39.29859","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"644"},{"1":"-8526072","2":"4764510","3":"645","4":"645","5":"93","6":"NA","7":"93","8":"Hopkins Fixed Cameras","9":"-76.59100","10":"39.29843","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"645"},{"1":"-8526033","2":"4764227","3":"646","4":"646","5":"166","6":"NA","7":"166","8":"Hopkins Fixed Cameras","9":"-76.59066","10":"39.29647","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"646"},{"1":"-8526041","2":"4764319","3":"647","4":"647","5":"168","6":"NA","7":"168","8":"Hopkins Fixed Cameras","9":"-76.59073","10":"39.29711","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"647"},{"1":"-8526008","2":"4764351","3":"648","4":"648","5":"149","6":"NA","7":"149","8":"Hopkins Fixed Cameras","9":"-76.59043","10":"39.29733","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"648"},{"1":"-8525973","2":"4764316","3":"649","4":"649","5":"170","6":"NA","7":"170","8":"Hopkins Fixed Cameras","9":"-76.59012","10":"39.29709","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"649"},{"1":"-8525910","2":"4764235","3":"650","4":"650","5":"163","6":"NA","7":"163","8":"Hopkins Fixed Cameras","9":"-76.58955","10":"39.29652","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"650"},{"1":"-8525912","2":"4764261","3":"651","4":"651","5":"158","6":"NA","7":"158","8":"Hopkins Fixed Cameras","9":"-76.58957","10":"39.29670","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"651"},{"1":"-8525912","2":"4764294","3":"652","4":"652","5":"156","6":"NA","7":"156","8":"Hopkins Fixed Cameras","9":"-76.58957","10":"39.29693","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"652"},{"1":"-8525914","2":"4764324","3":"653","4":"653","5":"154","6":"NA","7":"154","8":"Hopkins Fixed Cameras","9":"-76.58959","10":"39.29714","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"653"},{"1":"-8525918","2":"4764355","3":"654","4":"654","5":"152","6":"NA","7":"152","8":"Hopkins Fixed Cameras","9":"-76.58962","10":"39.29736","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"654"},{"1":"-8525917","2":"4764380","3":"655","4":"655","5":"123","6":"NA","7":"123","8":"Hopkins Fixed Cameras","9":"-76.58962","10":"39.29752","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"655"},{"1":"-8525899","2":"4764426","3":"656","4":"656","5":"102","6":"NA","7":"102","8":"Hopkins Fixed Cameras","9":"-76.58945","10":"39.29785","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"656"},{"1":"-8525927","2":"4764514","3":"657","4":"657","5":"119","6":"NA","7":"119","8":"Hopkins Fixed Cameras","9":"-76.58970","10":"39.29846","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"657"},{"1":"-8525937","2":"4764665","3":"658","4":"658","5":"24","6":"NA","7":"24","8":"Hopkins Fixed Cameras","9":"-76.58980","10":"39.29951","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"658"},{"1":"-8525901","2":"4764543","3":"659","4":"659","5":"13","6":"NA","7":"13","8":"Hopkins Fixed Cameras","9":"-76.58947","10":"39.29866","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"659"},{"1":"-8525805","2":"4764468","3":"660","4":"660","5":"98","6":"NA","7":"98","8":"Hopkins Fixed Cameras","9":"-76.58861","10":"39.29814","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"660"},{"1":"-8525807","2":"4764519","3":"661","4":"661","5":"94","6":"NA","7":"94","8":"Hopkins Fixed Cameras","9":"-76.58863","10":"39.29849","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"661"},{"1":"-8525807","2":"4764545","3":"662","4":"662","5":"5","6":"NA","7":"5","8":"Hopkins Fixed Cameras","9":"-76.58863","10":"39.29868","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"662"},{"1":"-8525813","2":"4764611","3":"663","4":"663","5":"2","6":"NA","7":"2","8":"Hopkins Fixed Cameras","9":"-76.58868","10":"39.29913","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"663"},{"1":"-8525735","2":"4764549","3":"664","4":"664","5":"7","6":"NA","7":"7","8":"Hopkins Fixed Cameras","9":"-76.58798","10":"39.29871","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"664"},{"1":"-8525734","2":"4764612","3":"665","4":"665","5":"1","6":"NA","7":"1","8":"Hopkins Fixed Cameras","9":"-76.58797","10":"39.29914","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"665"},{"1":"-8525740","2":"4764678","3":"666","4":"666","5":"22","6":"NA","7":"22","8":"Hopkins Fixed Cameras","9":"-76.58802","10":"39.29960","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"666"},{"1":"-8525816","2":"4764675","3":"667","4":"667","5":"17","6":"NA","7":"17","8":"Hopkins Fixed Cameras","9":"-76.58871","10":"39.29958","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"667"},{"1":"-8525906","2":"4764671","3":"668","4":"668","5":"11","6":"NA","7":"11","8":"Hopkins Fixed Cameras","9":"-76.58952","10":"39.29955","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"668"},{"1":"-8525589","2":"4764548","3":"670","4":"670","5":"603","6":"NA","7":"Monumnet/Collington","8":"BPD Cameras/603 Monumne","9":"-76.58667","10":"39.29869","11":"NA","12":"NA","13":"NA","14":"NA","_rn_":"670"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p><br /></p>
-<div id="using-the-plyr-package-to-sort-and-order" class="section level4">
-<h4>Using the <code>plyr</code> package to sort and order</h4>
-<pre class="r"><code>library(plyr)
-arrange(x, var1)</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["var1"],"name":[1],"type":["int"],"align":["right"]},{"label":["var2"],"name":[2],"type":["int"],"align":["right"]},{"label":["var3"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"1","2":"7","3":"15"},{"1":"2","2":"NA","3":"11"},{"1":"3","2":"NA","3":"14"},{"1":"4","2":"10","3":"12"},{"1":"5","2":"6","3":"13"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<pre class="r"><code>arrange(x, desc(var1))</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["var1"],"name":[1],"type":["int"],"align":["right"]},{"label":["var2"],"name":[2],"type":["int"],"align":["right"]},{"label":["var3"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"5","2":"6","3":"13"},{"1":"4","2":"10","3":"12"},{"1":"3","2":"NA","3":"14"},{"1":"2","2":"NA","3":"11"},{"1":"1","2":"7","3":"15"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
 </div>
 </div>
-</div>
-<div id="adding-rows-and-columns-to-dataframes" class="section level3">
-<h3>Adding Rows and Columns to Dataframes</h3>
-<pre class="r"><code>x$var4 &lt;- rnorm(5)
-x</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["var1"],"name":[1],"type":["int"],"align":["right"]},{"label":["var2"],"name":[2],"type":["int"],"align":["right"]},{"label":["var3"],"name":[3],"type":["int"],"align":["right"]},{"label":["var4"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"2","2":"NA","3":"11","4":"-0.4150458","_rn_":"5"},{"1":"4","2":"10","3":"12","4":"2.5437602","_rn_":"4"},{"1":"3","2":"NA","3":"14","4":"1.5545298","_rn_":"1"},{"1":"1","2":"7","3":"15","4":"-0.6192328","_rn_":"2"},{"1":"5","2":"6","3":"13","4":"-0.9261035","_rn_":"3"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<pre class="r"><code># or you can do it using column bind
-y &lt;- cbind(x, rnorm(5))
-y</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["var1"],"name":[1],"type":["int"],"align":["right"]},{"label":["var2"],"name":[2],"type":["int"],"align":["right"]},{"label":["var3"],"name":[3],"type":["int"],"align":["right"]},{"label":["var4"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["rnorm(5)"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"2","2":"NA","3":"11","4":"-0.4150458","5":"-0.66549949","_rn_":"5"},{"1":"4","2":"10","3":"12","4":"2.5437602","5":"-0.02166735","_rn_":"4"},{"1":"3","2":"NA","3":"14","4":"1.5545298","5":"-0.17411953","_rn_":"1"},{"1":"1","2":"7","3":"15","4":"-0.6192328","5":"0.23900438","_rn_":"2"},{"1":"5","2":"6","3":"13","4":"-0.9261035","5":"-1.83245959","_rn_":"3"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<pre class="r"><code># and now with rows
-z &lt;- rbind(x, c(6, 11, 16, rnorm(1)))
-z</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["var1"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["var2"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["var3"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["var4"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"2","2":"NA","3":"11","4":"-0.41504580","_rn_":"5"},{"1":"4","2":"10","3":"12","4":"2.54376015","_rn_":"4"},{"1":"3","2":"NA","3":"14","4":"1.55452978","_rn_":"1"},{"1":"1","2":"7","3":"15","4":"-0.61923285","_rn_":"2"},{"1":"5","2":"6","3":"13","4":"-0.92610346","_rn_":"3"},{"1":"6","2":"11","3":"16","4":"-0.03718739","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+<div id="crosstabs" class="section level3">
+<h3>Crosstabs</h3>
 </div>
 </div>
 

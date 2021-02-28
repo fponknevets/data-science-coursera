@@ -1,0 +1,167 @@
+---
+title: "Data Science Specialism - R Programming"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Subsetting and Sorting Data
+https://www.coursera.org/learn/data-cleaning/home/welcome
+
+**Further information**
+
+http://www.biostat.jhsph.edu/~ajaffe/lec_winterR/Lecture%202.pdf
+
+
+```{r setup}
+# {r setup}
+
+mod3Dir <- "~/repositories/learning/data-science-coursera/03-get-clean-data"
+dataDir <- "data"
+destFile <- "baltimoreCctv.csv"
+destPath <- paste(dataDir,destFile,sep="/")
+fileUrl <- "https://opendata.arcgis.com/datasets/b034388df7c447c98609e39453a3abaa_0.csv?outSR=%7B%22latestWkid%22%3A3857%2C%22wkid%22%3A102100%7D"
+
+setwd(mod3Dir)
+if(!file.exists(dataDir)) {
+        dir.create(dataDir)
+}
+
+if(!file.exists(destPath))
+   {
+        download.file(fileUrl, destfile=destPath, method="curl")
+}
+
+cctvData <- read.csv(destPath)
+
+# add levels to the proj field as this dataset does not have levels when imported
+cctvData$proj <- factor(cctvData$proj)
+
+
+# set the root directory for this notebook
+knitr::opts_knit$set(root.dir = paste(mod3Dir, dataDir, sep = "/"))
+
+# install the prerequisites (if not already installed)
+
+```
+
+<br />
+
+### Simple Summarising
+
+<br />
+
+#### head, tail, summary, str
+
+```{r}
+head(cctvData, n = 3)
+tail(cctvData, n = 3)
+summary(cctvData)
+str(cctvData)
+```
+
+<br />
+
+#### quantile
+
+```{r}
+# quantile not really that useful for this data set but here it is being used on cam_num
+quantile(cctvData$cam_num, na.rm = TRUE)
+quantile(cctvData$X)
+quantile(cctvData$Y)
+quantile(cctvData$Y, probs = c(0.1,0.25,0.3))
+```
+
+<br />
+
+#### table
+
+```{r}
+# summarise across one variable, useNA sets what you do with NAs, default is not include
+table(cctvData$proj, useNA = "ifany")
+
+
+# two dimensional table across two variables
+# table(cctvData$project, cctvData$cam_num)
+
+```
+
+<br />
+
+#### Checking for missing values
+
+```{r}
+# count of NA values in notes field
+sum(is.na(cctvData$notes))
+
+# any NAs in the notes field?
+any(is.na(cctvData$notes))
+
+# all values agree with the condition
+all(cctvData$fid == cctvData$objectid)
+
+# count of missing values per column
+colSums(is.na(cctvData))
+
+# no columns have NAs - they do actually so false
+all(colSums(is.na(cctvData)) == 0)
+```
+
+
+<br />
+
+#### summarising specific values
+
+```{r}
+# for a single value
+table(cctvData$xcoord >= -76.60)
+
+# for a vector of values
+table(round(cctvData$xcoord, 2) %in% c(-76.59, -76.60))
+```
+
+
+<br />
+
+#### subsetting the data using the specific values
+```{r}
+cctvData[round(cctvData$xcoord,2) %in% c(-76.59),]
+
+```
+
+
+<br />
+
+### Crosstabs
+
+```{r}
+data("UCBAdmissions")
+df = as.data.frame(UCBAdmissions)
+summary(df)
+
+# xtabs(the variable you want displayed ~ rows + columns, dataset)
+xt = xtabs(Freq ~ Gender + Admit, data = df)
+xt
+
+# you can cross tab by more than two dimensions but that is really hard to see
+# so you can feed the output of that in ftable to flatten the information a bit
+data("warpbreaks")
+warpbreaks$replicate <- rep(1:9, len = 54)
+# use the all the variables as dimensions
+xt = xtabs(breaks ~ ., data = warpbreaks)
+# flatten by using nested row variables
+ft = ftable(xt)
+ft
+```
+
+<br />
+
+### Data size
+
+```{r}
+fakeData = rnorm(1e5)
+object.size(fakeData)
+print(object.size(fakeData), units = "Kb")
+print(object.size(fakeData), units = "Mb")
+print(object.size(fakeData), units = "Gb")
+```
