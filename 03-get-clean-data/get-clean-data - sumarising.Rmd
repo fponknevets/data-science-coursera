@@ -5,7 +5,7 @@ output:
     df_print: paged
 ---
 
-# Subsetting and Sorting Data
+# Summarising Data
 https://www.coursera.org/learn/data-cleaning/home/welcome
 
 **Further information**

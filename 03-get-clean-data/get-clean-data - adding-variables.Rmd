@@ -1,0 +1,99 @@
+---
+title: "Data Science Specialism - R Programming"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Adding New Variables
+https://www.coursera.org/learn/data-cleaning/home/welcome
+
+**Further information**
+
+
+```{r setup}
+# {r setup}
+
+mod3Dir <- "~/repositories/learning/data-science-coursera/03-get-clean-data"
+dataDir <- "data"
+destFile <- "baltimoreRestaurants.csv"
+destPath <- paste(dataDir,destFile,sep="/")
+fileUrl <- "https://opendata.arcgis.com/datasets/53319332a909407e8ee52ae8ea79663d_0.csv?outSR=%7B%22latestWkid%22%3A3857%2C%22wkid%22%3A102100%7D"
+
+setwd(mod3Dir)
+if(!file.exists(dataDir)) {
+        dir.create(dataDir)
+}
+
+if(!file.exists(destPath))
+   {
+        download.file(fileUrl, destfile=destPath, method="curl")
+}
+
+restData <- read.csv(destPath)
+
+# because the zipcode is imported as character vector and we want to do quantile
+# operations on it later
+restData$zipcode <- as.numeric(restData$zipcode)
+
+# set the root directory for this notebook
+knitr::opts_knit$set(root.dir = paste(mod3Dir, dataDir, sep = "/"))
+
+# install the prerequisites (if not already installed)
+
+```
+
+### Summarise the Restaurant Data
+
+```{r}
+summary(restData)
+head(restData)
+```
+
+<br />
+
+#### Creating seqences for indexes
+
+```{r}
+# multiple ways of doing this
+s1 <- seq(1,10, by=2); s1
+s2 <- seq(1,10, length=3); s2
+
+# this seems to create a sequence for the number of columns not rows
+seq(along=restData)
+```
+
+<br />
+
+#### Subsetting by adding a new variable
+
+```{r}
+# arbitrary nearMe for restaurants in two specific neighbourhoods
+restData$nearMe <- restData$nghbrhd %in% c("Roland Park", "Homeland")
+table(restData$nearMe)
+
+# using ifelse command to weed out wrong zip codes
+restData$zipWrong <- ifelse(restData$zipcode <= 0, TRUE, FALSE)
+table(restData$zipWrong, restData$zipcode <= 0)
+```
+
+<br />
+
+#### Subsetting by adding a new variable - breaking up quantitative into categoriacals
+
+```{r}
+# breaking zip codes up into quantile groups
+restData$zipGroups = cut(restData$zipcode, breaks=quantile(restData$zipcode, na.rm = T))
+restData[1:10, c("zipGroups", "zipcode")]
+table(restData$zipcode,restData$zipGroups)
+```
+
+<br />
+
+### Creating factor variables
+
+```{r}
+restData$zcf <- factor(restData$zipcode)
+restData$zcf[1:10]
+class(restData$zcf)
+```
